@@ -445,7 +445,7 @@ export default function TransactionsScreen() {
   const renderEmptyState = () => (
     <View style={{ alignItems: 'center', marginTop: scale(200) }}>
       <Ionicons name="receipt-outline" size={scale(60)} color="#cfd4da" />
-      <Text style={[styles.noResultsText, { marginTop: scale(10) }]}>
+      <Text style={[styles.noResultsText, { marginTop: scale(10), fontWeight: 600 }]}>
         No records found in {activeTabMode}.
       </Text>
     </View>

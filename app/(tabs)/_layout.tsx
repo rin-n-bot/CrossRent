@@ -64,12 +64,12 @@ function TabItem({ route, isFocused, onPress }: any) {
         <Ionicons
           name={(isFocused ? icon : `${icon}-outline`) as any}
           size={scale(22)}
-          color={isFocused ? '#AF0B01' : '#1f29377a'}
+          color={isFocused ? '#AF0B01' : '#1f29373b'}
         />
       </Animated.View>
       <Text
         numberOfLines={1}
-        style={[styles.navLabel, { color: isFocused ? '#AF0B01' : '#1f29377a' }]}
+        style={[styles.navLabel, { color: isFocused ? '#AF0B01' : '#1f29373b' }]}
       >
         {label}
       </Text>
