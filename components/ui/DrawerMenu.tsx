@@ -109,7 +109,7 @@ export function DrawerMenu() {
 
          {/* DRAWER HEADER SECTION */}
          <View style={styles.drawerHeader}>
-           <Text style={styles.logoMini}>
+           <Text style={[styles.logoMini, { fontWeight: 700 }]}>
              <Text style={{ color: '#FFFFFF' }}>Cross</Text>
              <Text style={{ color: '#ffffff' }}>Rent</Text>
            </Text>
@@ -190,7 +190,7 @@ export function DrawerMenu() {
            {/* MODAL CONTENT SCROLLVIEW SECTION */}
            <ScrollView contentContainerStyle={styles.modalInfoSection}>
              <View style={[styles.infoCard, { padding: scale(20), borderColor: '#F0F0F0', borderWidth: 1 }]}>
-               <Text style={[styles.detailLabel, { color: '#222D31', marginBottom: scale(20) }]}>
+               <Text style={[styles.detailLabel, { color: '#222D31', marginBottom: scale(20), fontWeight: 700 }]}>
                  App Rules & Safety
                </Text>
                       
@@ -208,7 +208,7 @@ export function DrawerMenu() {
                  <View style={[styles.divider, { marginHorizontal: -scale(20), marginTop: scale(20) }]} />
                </View>
 
-               <Text style={styles.detailLabel}>Contact Support</Text>
+               <Text style={[styles.detailLabel, { fontWeight: 700 }]}>Contact Support</Text>
                <Text style={styles.detailValue}>
                  For concerns or to contact the owner/admin of the app, please email:
                </Text>

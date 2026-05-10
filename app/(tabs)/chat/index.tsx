@@ -133,9 +133,20 @@ export default function ChatScreen() {
 
 
   // Fetch and enrich chat data with profile information
-  useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) return;
+useEffect(() => {
+  let unsubscribeSnapshot: (() => void) | null = null;
+
+  const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+    if (unsubscribeSnapshot) {
+      unsubscribeSnapshot();
+      unsubscribeSnapshot = null;
+    }
+
+    if (!user) {
+      setChats([]);
+      setLoading(false);
+      return;
+    }
 
     cleanupGhostChatsOnChatLoad(user.uid);
 
@@ -144,7 +155,7 @@ export default function ChatScreen() {
       where('participants', 'array-contains', user.uid)
     );
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
+    unsubscribeSnapshot = onSnapshot(q, async (snapshot) => {
       const enriched = await Promise.all(
         snapshot.docs.map(async (d) => {
           const data = d.data();
@@ -195,9 +206,13 @@ export default function ChatScreen() {
       setChats(enriched);
       setLoading(false);
     });
+  });
 
-    return unsubscribe;
-  }, []);
+  return () => {
+    unsubscribeAuth();
+    if (unsubscribeSnapshot) unsubscribeSnapshot();
+  };
+}, []);
 
 
   // Filter logic for search and tab selection
@@ -264,7 +279,7 @@ export default function ChatScreen() {
           <Ionicons name="close-outline" size={scale(26)} color={COLOR_SURFACE} />
         </TouchableOpacity>
       )}
-      <Text style={[styles.logoMini, { flex: 1 }, isSelectionMode && { color: COLOR_SURFACE }]}>
+      <Text style={[styles.logoMini, { flex: 1, fontWeight: 700 }, isSelectionMode && { color: COLOR_SURFACE }]}>
         {isSelectionMode ? `${selectedChatIds.length} Selected` : 'Messages'}
       </Text>
       {isSelectionMode ? (
@@ -383,7 +398,7 @@ export default function ChatScreen() {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-              <Text style={{ color: COLOR_SURFACE, fontWeight: '800', fontSize: 16 }}>
+              <Text style={{ color: COLOR_SURFACE, fontWeight: '700', fontSize: 16 }}>
                 {item.displayEmail?.charAt(0).toUpperCase()}
               </Text>
             </View>
@@ -410,7 +425,7 @@ export default function ChatScreen() {
               style={[
                 chatStyles.userName,
                 { flex: 1, marginRight: scale(8) },
-                item.isUnread && { color: '#111', fontWeight: '900' },
+                item.isUnread && { color: '#111', fontWeight: '800' },
               ]}
               numberOfLines={1}
             >
@@ -419,7 +434,7 @@ export default function ChatScreen() {
             {timeLabel && (
               <Text style={{
                 fontSize: scale(13),
-                fontWeight: '700',
+                fontWeight: '600',
                 color: item.isUnread ? COLOR_DARK : COLOR_MUTED,
               }}>
                 {timeLabel}
@@ -429,7 +444,7 @@ export default function ChatScreen() {
           <Text
             style={[
               chatStyles.lastMsg,
-              item.isUnread && { color: COLOR_DARK, fontWeight: '700' },
+              item.isUnread && { color: COLOR_DARK, fontWeight: '600' },
             ]}
             numberOfLines={1}
           >

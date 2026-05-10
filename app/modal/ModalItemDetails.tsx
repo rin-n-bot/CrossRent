@@ -318,7 +318,7 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
                       {ownerPhoto ? (
                         <Image source={{ uri: ownerPhoto }} style={{ width: '100%', height: '100%' }} />
                       ) : (
-                        <Text style={{ color: '#FFF', fontWeight: '800', fontSize: scale(10) }}>
+                        <Text style={{ color: '#FFF', fontWeight: '700', fontSize: scale(10) }}>
                           {selectedItem?.ownerEmail?.charAt(0).toUpperCase() ?? '?'}
                         </Text>
                       )}
@@ -398,7 +398,7 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
 
                   <Text style={{
                     fontSize: scale(13),
-                    fontWeight: '800',
+                    fontWeight: '700',
                     color: '#1976D2',
                     marginLeft: scale(6)
                   }}>
@@ -409,6 +409,7 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
                 <Text style={{
                   fontSize: scale(13),
                   lineHeight: scale(18),
+                  fontWeight: 500,
                   color: '#1976D2'
                 }}>
                   Please note that our platform does not handle payments directly.

@@ -15,7 +15,7 @@ const SHARED_INPUT = {
   shadowOffset: { width: 0, height: 1 },
   shadowOpacity: 0.08,
   shadowRadius: 2,
-  elevation: 1,
+  elevation: 0,
 };
 
 export const styles = StyleSheet.create({
@@ -41,14 +41,14 @@ export const styles = StyleSheet.create({
   },
   logo: { 
     fontSize: 18, 
-    fontWeight: '800', 
+    fontWeight: '700', 
     color: '#222D31',
     letterSpacing: -0.5,
     marginBottom: 8
   },
   heroHeader: {
     fontSize: 35,
-    fontWeight: '900',
+    fontWeight: '700',
     color: '#222D31',
     letterSpacing: -1.5,
   },
@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
     shadowRadius: 3
   },
   selectionText: {
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#1d3557',
     fontSize: 15
   },
@@ -114,7 +114,7 @@ export const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '700',
     color: '#222D31',
   },
   input: {
@@ -146,7 +146,7 @@ export const styles = StyleSheet.create({
   mainActionText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '600',
     letterSpacing: 1
   },
 

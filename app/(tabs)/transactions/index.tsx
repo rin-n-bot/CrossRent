@@ -266,13 +266,13 @@ export default function TransactionsScreen() {
               style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40) }]}
               onPress={() => updateTransactionStatus(item.id, item.itemId, 'rented')}
             >
-              <Text style={styles.messageBtnText}>Approve</Text>
+              <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Approve</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40) }]}
               onPress={() => updateTransactionStatus(item.id, item.itemId, 'cancelled')}
             >
-              <Text style={styles.messageBtnText}>Decline</Text>
+              <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Decline</Text>
             </TouchableOpacity>
           </>
         )}
@@ -282,7 +282,7 @@ export default function TransactionsScreen() {
             style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40) }]}
             onPress={() => confirmReturnProcess(item.id, item.itemId)}
           >
-            <Text style={styles.messageBtnText}>Confirm Return</Text>
+            <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Confirm Return</Text>
           </TouchableOpacity>
         )}
 
@@ -291,7 +291,7 @@ export default function TransactionsScreen() {
             style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40) }]}
             onPress={() => updateTransactionStatus(item.id, item.itemId, 'cancelled')}
           >
-            <Text style={styles.messageBtnText}>Cancel Request</Text>
+            <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Cancel Request</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -335,13 +335,13 @@ export default function TransactionsScreen() {
           )}
         </View>
 
-        <Text style={styles.cardTimestamp}>
+        <Text style={[styles.cardTimestamp, { fontWeight: 700 }]}>
           {isOwner ? `Renter: ${item.renterEmail}` : `Owner: ${item.ownerEmail}`}
         </Text>
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Ionicons name="calendar-outline" size={14} color={COLOR_PRIMARY_RED} />
-          <Text style={[styles.cardTimestamp, { marginLeft: 5, marginBottom: 0 }]}>
+          <Text style={[styles.cardTimestamp, { marginLeft: 5, marginBottom: 0, fontWeight: 600 }]}>
             {getFormattedTimestamp(item.createdAt)}
           </Text>
         </View>
@@ -361,7 +361,7 @@ export default function TransactionsScreen() {
         </TouchableOpacity>
       )}
 
-      <Text style={[styles.logoMini, { flex: 1 }, isSelectionModeActive && { color: '#FFF' }]}>
+      <Text style={[styles.logoMini, { flex: 1, fontWeight: 700 }, isSelectionModeActive && { color: '#FFF' }]}>
         {isSelectionModeActive ? `${selectedTransactionIds.length} Selected` : 'Transactions'}
       </Text>
 
@@ -429,11 +429,11 @@ export default function TransactionsScreen() {
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: scale(6) }}>
           <Ionicons name="information-circle-outline" size={scale(18)} color={COLOR_INFO_BLUE} />
-          <Text style={{ fontSize: scale(13), fontWeight: '800', color: COLOR_INFO_BLUE, marginLeft: scale(6) }}>
+          <Text style={{ fontSize: scale(13), fontWeight: '700', color: COLOR_INFO_BLUE, marginLeft: scale(6) }}>
             Disclaimer
           </Text>
         </View>
-        <Text style={{ fontSize: scale(13), lineHeight: scale(18), color: COLOR_INFO_BLUE }}>
+        <Text style={{ fontSize: scale(13), lineHeight: scale(18), color: COLOR_INFO_BLUE, fontWeight: 500}}>
           All transactions are made between users outside the app.
         </Text>
       </View>

@@ -129,9 +129,9 @@ export default function AddScreen() {
           <TouchableOpacity onPress={() => navigationRouter.back()} style={styles.iconButton}>
             <Ionicons name="close-outline" size={30} color="#FFF" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>List an Item</Text>
+          <Text style={[styles.headerTitle, { fontWeight: 700 }]}>List an Item</Text>
           <TouchableOpacity onPress={saveListingToDatabase} style={styles.iconButton}>
-            <Text style={styles.postBtnText}>Post</Text>
+            <Text style={[styles.postBtnText, { fontWeight: 700 }]}>Post</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

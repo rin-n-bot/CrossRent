@@ -139,9 +139,9 @@ export default function EditItemScreen() {
              <TouchableOpacity onPress={() => router.back()} style={s.iconButton}>
                <Ionicons name="arrow-back-outline" size={28} color="#FFF" />
              </TouchableOpacity>
-             <Text style={s.headerTitle}>Edit Listing</Text>
+             <Text style={[s.headerTitle, { fontWeight: 700 }]}>Edit Listing</Text>
              <TouchableOpacity onPress={handleUpdate} style={s.iconButton}>
-               <Text style={s.postBtnText}>Save</Text>
+               <Text style={[s.postBtnText, { fontWeight: 700 }]}>Save</Text>
              </TouchableOpacity>
            </View>
          </SafeAreaView>
@@ -150,7 +150,7 @@ export default function EditItemScreen() {
        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
          <ScrollView contentContainerStyle={s.formContainer} showsVerticalScrollIndicator={false}>
            
-           <Text style={s.label}>Item Name</Text>
+           <Text style={[s.label, { fontWeight: 700 }]}>Item Name</Text>
            <TextInput style={s.input} value={name} onChangeText={setName} />
 
            <Text style={s.label}>Category</Text>

@@ -48,7 +48,7 @@ export const chatStyles = StyleSheet.create({
   rightContainer: { width: 60 },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.surface,
     textAlign: 'center',
     width: '65%',
@@ -155,26 +155,6 @@ export const chatStyles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-
-
-  // Floating Action Button
-  fab: {
-    position: 'absolute',
-    right: 25,
-    bottom: 95,
-    backgroundColor: COLORS.primary,
-    width: 55,
-    height: 55,
-    borderRadius: 32.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    zIndex: 9999,
   },
   
 });

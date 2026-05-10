@@ -160,7 +160,7 @@ export const styles = StyleSheet.create({
   // Brand identity text
   logoMini: {
     fontSize: scale(24),
-    fontWeight: '900',
+    fontWeight: '700',
     color: COLORS.dark,
     letterSpacing: -1,
   },
@@ -196,7 +196,7 @@ export const styles = StyleSheet.create({
   // Short/Full school name text
   hcdcText: {
     fontSize: scale(14),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.secondary,
     marginRight: scale(4),
     letterSpacing: 0.5,
@@ -206,7 +206,7 @@ export const styles = StyleSheet.create({
   // Large bold greeting headline
   greetingText: {
     fontSize: scale(24),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.dark,
     lineHeight: scale(24.5),
     letterSpacing: -0.5,
@@ -244,7 +244,7 @@ export const styles = StyleSheet.create({
   sectionLabel: {
     paddingHorizontal: HORIZONTAL_PADDING,
     fontSize: scale(15),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.dark,
     marginTop: scale(5),
     marginBottom: scale(12),
@@ -285,7 +285,7 @@ export const styles = StyleSheet.create({
   categoryCardText: {
     marginTop: scale(8),
     fontSize: scale(11),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
   },
 
@@ -348,7 +348,7 @@ export const styles = StyleSheet.create({
   cardCategory: {
     fontSize: scale(10),
     color: COLORS.primary,
-    fontWeight: '800',
+    fontWeight: '700',
     textTransform: 'uppercase',
   },
 
@@ -365,18 +365,10 @@ export const styles = StyleSheet.create({
   // Bold price text on card
   cardPricePlain: {
     fontSize: scale(16),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.dark,
   },
 
-
-  // Subtle date text on card
-  cardTimestamp: {
-    fontSize: scale(12),
-    fontWeight: '700',
-    color: COLORS.textMuted,
-    textTransform: 'lowercase',
-  },
 
 
   // Visual background for item status
@@ -415,7 +407,7 @@ export const styles = StyleSheet.create({
   noResultsText: {
     fontSize: scale(14),
     color: COLORS.borderMedium,
-    fontWeight: '700',
+    fontWeight: '600',
   },
 
 
@@ -424,7 +416,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     color: COLORS.borderMedium,
     fontSize: scale(14),
-    fontWeight: '700',
+    fontWeight: '600',
     marginTop: scale(20),
     marginBottom: scale(10),
   },
@@ -449,7 +441,7 @@ export const styles = StyleSheet.create({
   // Item title in the detail header
   modalHeaderTitle: {
     fontSize: scale(19),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.dark,
     letterSpacing: -1,
   },
@@ -486,7 +478,7 @@ export const styles = StyleSheet.create({
   // Detail view category tag
   modalCategory: {
     fontSize: scale(12),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.primary,
     textTransform: 'uppercase',
   },
@@ -495,7 +487,7 @@ export const styles = StyleSheet.create({
   // Large title in details view
   modalTitle: {
     fontSize: scale(22),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     marginBottom: scale(5),
   },
@@ -504,7 +496,7 @@ export const styles = StyleSheet.create({
   // Large price in details view
   modalPrice: {
     fontSize: scale(20),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.dark,
     marginBottom: scale(20),
   },
@@ -513,7 +505,7 @@ export const styles = StyleSheet.create({
   // Labels for description or specs
   detailLabel: {
     fontSize: scale(16),
-    fontWeight: '800',
+    fontWeight: '500',
     color: COLORS.dark,
     marginBottom: scale(8),
   },
@@ -538,7 +530,7 @@ export const styles = StyleSheet.create({
   // Owner name or contact text
   detailValueContact: {
     fontSize: scale(15),
-    fontWeight: '600',
+    fontWeight: '700',
     color: COLORS.dark,
     marginLeft: 8,
   },
@@ -573,7 +565,7 @@ export const styles = StyleSheet.create({
   messageBtnText: {
     color: COLORS.surface,
     fontSize: scale(15),
-    fontWeight: '800',
+    fontWeight: '700',
   },
 
 
@@ -613,7 +605,7 @@ export const styles = StyleSheet.create({
   // Subtle label within info cards
   infoRowLabel: {
     fontSize: scale(13),
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.textMuted,
   },
 

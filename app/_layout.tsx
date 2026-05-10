@@ -10,7 +10,6 @@ import { db } from '../firebase';
 function RootLayoutContent() {
   const { user, loading } = useAuth();
 
-  // Clean up empty or corrupted chat documents each time the app loads
   useEffect(() => {
     if (!user) return;
 
@@ -57,7 +56,6 @@ function RootLayoutContent() {
     cleanupGhostChats();
   }, [user]);
 
-  // Show a spinner while the auth state is being determined
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -68,23 +66,16 @@ function RootLayoutContent() {
 
   return (
     <DrawerProvider>
-      {/* flex:1 on the outer wrapper and the Stack both needed so children
-          measure their width against the full screen, not a collapsed container */}
       <View style={{ flex: 1 }}>
         {user && <DrawerMenu />}
         <Stack screenOptions={{ headerShown: false, contentStyle: { flex: 1 } }}>
-          {user ? (
-            <>
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="add" options={{ presentation: 'modal' }} />
-              <Stack.Screen name="profile" />
-              <Stack.Screen name="my-listing" />
-              <Stack.Screen name="message" />
-              <Stack.Screen name="modal" />
-            </>
-          ) : (
-            <Stack.Screen name="(auth)" />
-          )}
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="add" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="profile" />
+          <Stack.Screen name="my-listing" />
+          <Stack.Screen name="message" />
+          <Stack.Screen name="modal" />
         </Stack>
       </View>
     </DrawerProvider>

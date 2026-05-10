@@ -249,7 +249,7 @@ export default function MyListingScreen() {
                        flex: 1,
                        marginLeft: scale(15),
                        fontSize: scale(20),
-                       fontWeight: '800',
+                       fontWeight: '700',
                        color: '#222D31',
                        letterSpacing: -1
                    }}>
@@ -348,7 +348,7 @@ export default function MyListingScreen() {
                            /* EMPTY LIST PLACEHOLDER */
                            <View style={{ alignItems: 'center', marginTop: scale(220) }}>
                                <Ionicons name="list-outline" size={scale(60)} color="#cfd4da" />
-                               <Text style={[styles.emptyText, { marginTop: scale(5), color: '#cfd4da', fontWeight: '700' }]}>
+                               <Text style={[styles.emptyText, { marginTop: scale(5), color: '#cfd4da', fontWeight: '500' }]}>
                                    {activeCategory === 'All' ? "No listings created." : `No listings in ${activeCategory}`}
                                </Text>
                            </View>

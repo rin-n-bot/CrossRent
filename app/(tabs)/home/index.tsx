@@ -43,7 +43,12 @@ export default function HomeScreen() {
   // Navigation and Drawer context
   const { toggleDrawer, isDrawerOpen } = useDrawer();
   const router = useRouter();
-  const currentUser = auth.currentUser;
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged((user) => setCurrentUser(user));
+    return unsub;
+  }, []);
 
 
   // UI State management
@@ -99,66 +104,78 @@ export default function HomeScreen() {
   };
 
 
-  // Sync user profile data from Firestore
-  useEffect(() => {
-    if (!currentUser) return;
-    setUserEmail(currentUser.email || '');
+// Sync user profile data from Firestore
+useEffect(() => {
+  if (!currentUser) return;
+  setUserEmail(currentUser.email || '');
 
-    const unsubProfile = onSnapshot(doc(db, 'profiles', currentUser.uid), (snap) => {
-      if (snap.exists()) {
-        setAvatarUrl(snap.data().profilePicUrl || '');
-      }
-    });
-    return unsubProfile;
-  }, [currentUser]);
+  const unsubProfile = onSnapshot(
+    doc(db, 'profiles', currentUser.uid),
+    (snap) => { if (snap.exists()) setAvatarUrl(snap.data().profilePicUrl || ''); },
+    (error) => console.error('Profile snapshot error:', error)
+  );
+  return unsubProfile;
+}, [currentUser?.uid]); 
 
 
-  // Sync categories list from Firestore
-  useEffect(() => {
-    const unsubCats = onSnapshot(collection(db, 'categories'), (snapshot) => {
+// Sync categories list from Firestore
+useEffect(() => {
+  if (!currentUser) return;
+  const unsubCats = onSnapshot(
+    collection(db, 'categories'),
+    (snapshot) => {
       const fetched = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         displayName: formatCategoryName(doc.id),
       }));
       setDbCategories([{ id: ALL_CATEGORY_ID, displayName: ALL_CATEGORY_ID, icon: 'grid-outline' }, ...fetched]);
-    });
-    return unsubCats;
+    },
+    (error) => console.error('Categories snapshot error:', error)
+  );
+  return unsubCats;
+}, [currentUser]); 
+
+
+// Listen for new item listings
+useEffect(() => {
+  if (!currentUser) return;
+  
+  let unsubItems: (() => void) | null = null;
+
+  const task = InteractionManager.runAfterInteractions(() => {
+    const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
+    unsubItems = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            name: data.name || 'Untitled Item',
+            title: data.name || 'Untitled Item',
+            category: data.category || '',
+            categoryId: data.categoryId || '',
+            image: data.imageUrl,
+            timestamp: data.createdAt?.toDate().toLocaleDateString() || 'Just now',
+          };
+        });
+        setListings(items);
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error('Firestore Error:', error);
+        setIsLoading(false);
+      }
+    );
   });
 
-
-  // Listen for new item listings
-  useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
-      const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
-      const unsubItems = onSnapshot(
-        q,
-        (snapshot) => {
-          const items = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              ...data,
-              name: data.name || 'Untitled Item',
-              title: data.name || 'Untitled Item',
-              category: data.category || '',
-              categoryId: data.categoryId || '',
-              image: data.imageUrl,
-              timestamp: data.createdAt?.toDate().toLocaleDateString() || 'Just now',
-            };
-          });
-          setListings(items);
-          setIsLoading(false);
-        },
-        (error) => {
-          console.error('Firestore Error:', error);
-          setIsLoading(false);
-        }
-      );
-      return unsubItems;
-    });
-    return () => task.cancel();
-  }, []);
+  return () => {
+    task.cancel();
+    if (unsubItems) unsubItems();
+  };
+}, [currentUser]);
 
 
   // Control the fading greeting text

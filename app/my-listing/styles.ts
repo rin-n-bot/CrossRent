@@ -30,7 +30,7 @@ export const listingStyles = StyleSheet.create({
     flex: 1,
     color: '#FFFFFF',
     fontSize: scale(18),
-    fontWeight: '800',
+    fontWeight: '700',
     textAlign: 'center',
     marginRight: scale(28), 
   },
@@ -123,7 +123,7 @@ export const listingStyles = StyleSheet.create({
   emptyText: {
     fontSize: scale(16),
     color: COLORS.textSecondary,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: SPACING.md,
   }
 });

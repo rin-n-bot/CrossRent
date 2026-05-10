@@ -35,6 +35,7 @@ import { auth, db } from '../../firebase';
 // Constants 
 const MESSAGE_GROUPING_THRESHOLD_MS = 60 * 1000;
 const PHILIPPINES_UTC_OFFSET_MS = 8 * 60 * 60 * 1000;
+const BUBBLE_MIN_WIDTH = 60;
 const BUBBLE_MAX_WIDTH = Dimensions.get('window').width * 0.75;
 const BUBBLE_AVATAR_SIZE = 28;
 const HEADER_AVATAR_SIZE = 34;
@@ -216,7 +217,7 @@ const TimeDivider = ({ label }: { label: string }) => (
         paddingHorizontal: 10,
         paddingVertical: 3,
         borderRadius: 10,
-        overflow: 'visible',
+        overflow: 'hidden',
       }}
     >
       {label}
@@ -250,18 +251,19 @@ const MessageBubble = ({
 
   // Fallback
   const senderInitial = (messageData.senderEmail as string)?.charAt(0).toUpperCase() ?? '?';
-  console.log("BUBBLE_MAX_WIDTH:", BUBBLE_MAX_WIDTH, "| text:", messageData.text);
+
 
   return (
     // Row flips direction based on who sent the message
     <View
-      style={{
-        flexDirection: isSentByCurrentUser ? 'row-reverse' : 'row',
-        alignItems: 'flex-end',
-        marginVertical: 4,
-        paddingHorizontal: 12,
-      }}
-    >
+  style={{
+    flexDirection: 'row',
+    justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start',
+    alignItems: 'flex-end',
+    marginVertical: 4,
+    paddingHorizontal: 12,
+  }}
+>
       {/* Avatar column — only present on received messages */}
       {!isSentByCurrentUser && (
 
@@ -288,13 +290,15 @@ const MessageBubble = ({
       <View
         style={{
           maxWidth: BUBBLE_MAX_WIDTH,
-          paddingHorizontal: 14,
+          minWidth: BUBBLE_MIN_WIDTH,
+          paddingLeft: 14,
+          paddingRight: 20,
           paddingVertical: 9,
           borderRadius: 20,
           borderBottomRightRadius: isSentByCurrentUser ? 4 : 20,
           borderBottomLeftRadius: isSentByCurrentUser ? 20 : 4,
           backgroundColor: isSentByCurrentUser ? '#222D31' : '#FFFFFF',
-          overflow: 'visible',
+          overflow: 'hidden',
           ...(isSentByCurrentUser ? {} : receivedShadow),
         }}
       >
@@ -302,11 +306,10 @@ const MessageBubble = ({
         <Text
           style={{
             fontSize: 15,
-            lineHeight: 22,
             color: isSentByCurrentUser ? '#FFFFFF' : '#222D31',
           }}
         >
-          {messageData.text}
+          {messageData.text + ' '}
         </Text>
       </View>
     </View>

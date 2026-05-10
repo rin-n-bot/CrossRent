@@ -28,14 +28,14 @@ export const profileStyles = StyleSheet.create({
   navTitle: {
     flex: 1,
     fontSize: scale(20),
-    fontWeight: '800',
+    fontWeight: '700',
     color: '#222D31',
     letterSpacing: -1,
     marginLeft: scale(15),
   },
   navAction: {
     fontSize: scale(14),
-    fontWeight: '800',
+    fontWeight: '700',
     color: '#AF0B01',
   },
 
@@ -67,7 +67,7 @@ export const profileStyles = StyleSheet.create({
   },
   avatarInitials: {
     fontSize: scale(30),
-    fontWeight: '800',
+    fontWeight: '700',
     color: '#FFFFFF',
   },
   avatarEditBtn: {
@@ -88,21 +88,21 @@ export const profileStyles = StyleSheet.create({
   // USER IDENTITY TEXT STYLES
   userName: {
     fontSize: scale(18),
-    fontWeight: '800',
+    fontWeight: '700',
     color: '#222D31',
     letterSpacing: -0.5,
     textTransform: 'lowercase',
   },
   userEmail: {
     fontSize: scale(12),
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#9CA3AF',
     marginTop: scale(3),
     textTransform: 'lowercase',
   },
   memberSince: {
     fontSize: scale(12),
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#9CA3AF',
     marginTop: scale(4),
   },
@@ -145,7 +145,7 @@ export const profileStyles = StyleSheet.create({
   },
   sectionLabel: {
     fontSize: scale(15),
-    fontWeight: '800',
+    fontWeight: '700',
     color: '#222D31',
     marginBottom: scale(10),
   },
@@ -200,7 +200,7 @@ export const profileStyles = StyleSheet.create({
   },
   charCount: {
     fontSize: scale(12),
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#999',
     marginTop: scale(6),
     textAlign: 'right',
@@ -223,7 +223,7 @@ export const profileStyles = StyleSheet.create({
   saveBtnText: {
     color: '#FFFFFF',
     fontSize: scale(15),
-    fontWeight: '800',
+    fontWeight: '700',
   },
   saveBtnDisabled: {
     backgroundColor: '#cfd4da',
