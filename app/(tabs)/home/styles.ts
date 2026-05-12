@@ -356,7 +356,7 @@ export const styles = StyleSheet.create({
   // Item name in listing grid
   cardTitle: {
     fontSize: scale(13),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     marginBottom: scale(4),
   },
@@ -365,7 +365,7 @@ export const styles = StyleSheet.create({
   // Bold price text on card
   cardPricePlain: {
     fontSize: scale(16),
-    fontWeight: '600',
+    fontWeight: '700',
     color: COLORS.dark,
   },
 

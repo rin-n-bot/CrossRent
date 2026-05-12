@@ -24,10 +24,7 @@ export default function TabsLayout() {
 
   return (
     <Tabs
-      screenOptions={{
-        headerShown: false,
-        animation: 'fade',
-      }}
+      screenOptions={{ headerShown: false, animation: 'fade' }}
       tabBar={(props) => <GlassCapsuleNav {...props} />}
     >
       <Tabs.Screen name="home/index" options={{ title: 'Home' }} />
@@ -64,12 +61,12 @@ function TabItem({ route, isFocused, onPress }: any) {
         <Ionicons
           name={(isFocused ? icon : `${icon}-outline`) as any}
           size={scale(22)}
-          color={isFocused ? '#AF0B01' : '#1f29373b'}
+          color={isFocused ? '#AF0B01' : '#cfd4da'}
         />
       </Animated.View>
       <Text
         numberOfLines={1}
-        style={[styles.navLabel, { color: isFocused ? '#AF0B01' : '#1f29373b' }]}
+        style={[styles.navLabel, { color: isFocused ? '#AF0B01' : '#cfd4da' }]}
       >
         {label}
       </Text>
@@ -84,31 +81,26 @@ function GlassCapsuleNav({ state, navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.glassCapsule}>
-        {visibleRoutes.map((route: any) => {
-          const actualIndex = state.routes.findIndex((r: any) => r.key === route.key);
-          const isFocused = state.index === actualIndex;
+      <View style={styles.pill}>
+        <View style={styles.capsule}>
+          {visibleRoutes.map((route: any) => {
+            const actualIndex = state.routes.findIndex((r: any) => r.key === route.key);
+            const isFocused = state.index === actualIndex;
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          };
+            const onPress = () => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
+            };
 
-          return (
-            <TabItem
-              key={route.key}
-              route={route}
-              isFocused={isFocused}
-              onPress={onPress}
-            />
-          );
-        })}
+            return (
+              <TabItem key={route.key} route={route} isFocused={isFocused} onPress={onPress} />
+            );
+          })}
+        </View>
       </View>
 
       <View style={styles.addWrapper}>
@@ -132,32 +124,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: scale(16),
+    paddingHorizontal: scale(22),
+    marginBottom: 6,
   },
-  glassCapsule: {
+  pill: {
     flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    height: scale(65),
     borderRadius: scale(32),
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
-    elevation: 6,
-    paddingRight: scale(12),
+    backgroundColor: '#FFFFFF',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
-    shadowRadius: 10,
+    shadowRadius: 16,
+    elevation: 14,
+  },
+  capsule: {
+    flexDirection: 'row',
+    height: scale(65),
+    alignItems: 'center',
+    borderRadius: scale(32),
+    paddingHorizontal: scale(8),
   },
   navItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingRight: 12,
   },
   navLabel: {
-    fontSize: scale(11),
+    fontSize: scale(10.5),
     fontWeight: '700',
     marginTop: scale(4),
     textAlign: 'center',

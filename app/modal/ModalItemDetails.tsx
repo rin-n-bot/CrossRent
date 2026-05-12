@@ -269,14 +269,14 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
               }}>
                 
                 <Text 
-                  style={[styles.modalTitle, { flex: 1, marginRight: scale(10), fontWeight: 700 }]}
+                  style={[styles.modalTitle, { flex: 1, marginRight: scale(10), fontWeight: 600 }]}
                   numberOfLines={2}
                 >
                   {selectedItem?.name || selectedItem?.title}
                 </Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                  <Text style={[styles.modalPrice, { marginBottom: 0, fontWeight: 600 }]}>
+                  <Text style={[styles.modalPrice, { marginBottom: 0, fontWeight: 700 }]}>
                     {selectedItem?.price}
                   </Text>
 
