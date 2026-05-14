@@ -28,14 +28,12 @@ import { auth, db } from '../../firebase';
 import { handleRentRequest } from '../../services/transactionService';
 
 
-// Interface for component props
 interface ModalItemDetailsProps {
   selectedItem: any;
   setSelectedItem: (item: any) => void;
 }
 
 
-// Date Formatting
 const formatPostedDate = (raw: any): string => {
   let date: Date | null = null;
   if (!raw) return 'Recently';
@@ -55,19 +53,39 @@ const formatPostedDate = (raw: any): string => {
 };
 
 
-// Main component
 export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDetailsProps) => {
 
-
-  // Navigation and Authentication hooks
   const router = useRouter();
   const user = auth.currentUser;
   const isOwner = user?.uid === selectedItem?.ownerId;
 
-
-  // State
   const [ownerPhoto, setOwnerPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [userHasActiveRequest, setUserHasActiveRequest] = useState(false);
+
+  // Derive display status — Pending is per-user POV only
+  const displayStatus = userHasActiveRequest ? 'Pending' : selectedItem?.status;
+  const isUnavailable = displayStatus === 'Rented';
+
+
+  // Check if current user already has an active request for this item
+  useEffect(() => {
+    if (!user || !selectedItem?.id) return;
+    setUserHasActiveRequest(false);
+
+    const checkRequest = async () => {
+      const q = query(
+        collection(db, 'transactions'),
+        where('itemId', '==', selectedItem.id),
+        where('renterId', '==', user.uid),
+        where('status', 'in', ['requested', 'rented'])
+      );
+      const snap = await getDocs(q);
+      setUserHasActiveRequest(!snap.empty);
+    };
+
+    checkRequest();
+  }, [selectedItem?.id, user?.uid]);
 
 
   // Fetch owner profile image
@@ -80,7 +98,7 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
   }, [selectedItem?.ownerId]);
 
 
-  // Logic to determine button action based on ownership
+  // Determine button action based on ownership and item status
   const handleActionTrigger = () => {
     if (!user) {
       Alert.alert('Authentication', 'Please log in to continue.');
@@ -96,8 +114,11 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
       return;
     }
 
-    if (selectedItem.status === 'rented') {
-      Alert.alert('Unavailable', 'This item is currently rented.');
+    if (isUnavailable) {
+      Alert.alert(
+        'Item Unavailable',
+        'This item is currently rented by someone. You may still message the owner.'
+      );
       return;
     }
 
@@ -105,7 +126,7 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
   };
 
 
-  // Firebase processing rental requests logic
+  // Create rental request, open/create chat, send system message
   const processRentalRequest = async () => {
     setLoading(true);
     try {
@@ -122,7 +143,6 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
           'Notice',
           'You already have an active request or an ongoing rental for this item. Check your Transactions.'
         );
-
         setLoading(false);
         return;
       }
@@ -136,8 +156,8 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
 
       let chatId: string;
       let isNewChat = false;
-      if (chatQuerySnapshot.empty) {
 
+      if (chatQuerySnapshot.empty) {
         chatId = doc(collection(db, 'chats')).id;
         isNewChat = true;
       } else {
@@ -160,20 +180,18 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
         isSystem: true,
       });
 
-      if (!messageRef.id) {
-        throw new Error('Failed to create message - chat not initialized');
-      }
+      if (!messageRef.id) throw new Error('Failed to create message - chat not initialized');
 
       await setDoc(
         doc(db, 'chats', chatId),
         {
-          participants, 
+          participants,
           lastMessage: `Requested: ${selectedItem.name}`,
           lastSenderEmail: user!.email,
           updatedAt: serverTimestamp(),
-          ...(isNewChat && { readBy: [] }), 
+          ...(isNewChat && { readBy: [] }),
         },
-        { merge: true } 
+        { merge: true }
       );
 
       Alert.alert('Success', 'Rental request sent to owner!');
@@ -192,11 +210,58 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
   };
 
 
-  // Main render
+  // Open or create a direct chat without sending any automated message
+  const handleOpenChat = async () => {
+    if (!user) {
+      Alert.alert('Authentication', 'Please log in to continue.');
+      return;
+    }
+
+    try {
+      const participants = [user!.uid, selectedItem.ownerId].sort();
+      const chatsRef = collection(db, 'chats');
+      const q = query(chatsRef, where('participants', '==', participants));
+      const chatQuerySnapshot = await getDocs(q);
+
+      let chatId: string;
+
+      if (chatQuerySnapshot.empty) {
+        chatId = doc(collection(db, 'chats')).id;
+        await setDoc(doc(db, 'chats', chatId), {
+          participants,
+          lastMessage: '',
+          lastSenderEmail: '',
+          updatedAt: serverTimestamp(),
+          readBy: [],
+        });
+      } else {
+        chatId = chatQuerySnapshot.docs[0].id;
+      }
+
+      router.push({
+        pathname: '/message/convo',
+        params: { chatId },
+      });
+    } catch (error) {
+      console.error('Chat Error: ', error);
+      Alert.alert('Error', 'Failed to open chat.');
+    }
+  };
+
+
+  // Badge color logic
+  const badgeBackground =
+    displayStatus === 'Available' || displayStatus === 'Pending'
+      ? '#E8F5E9'
+      : '#FFEBEE';
+  const badgeTextColor =
+    displayStatus === 'Available' || displayStatus === 'Pending'
+      ? '#27AE60'
+      : '#AF0B01';
+
+
   return (
     <View>
-
-
       <Modal
         visible={selectedItem !== null}
         animationType="slide"
@@ -205,22 +270,19 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
       >
         <SafeAreaView style={styles.modalContainer}>
 
-          {/* UI HEADER SECTION */}
+          {/* HEADER */}
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setSelectedItem(null)} style={{ padding: scale(5) }}>
               <Ionicons name="arrow-back" size={scale(24)} color="#222D31" />
             </TouchableOpacity>
-
             <Text style={[styles.modalHeaderTitle, { flex: 1, marginLeft: scale(15) }]}>
               Item Details
             </Text>
-
             <View style={{ width: scale(24) }} />
           </View>
 
-          {/* UI SCROLLABLE CONTENT SECTION */}
+          {/* SCROLLABLE CONTENT */}
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-            
 
             <Image
               source={{ uri: selectedItem?.imageUrl || selectedItem?.image }}
@@ -229,92 +291,61 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
 
             <View style={styles.modalInfoSection}>
 
-              {/* CATEGORY AND STATUS BADGE DISPLAY */}
+              {/* CATEGORY AND STATUS BADGE */}
               <View style={styles.modalRow}>
                 <Text style={styles.modalCategory}>{selectedItem?.category}</Text>
-
-                <View
-                  style={[
-                    styles.statusBadge,
-                    {
-                      backgroundColor:
-                        selectedItem?.status === 'Available' || selectedItem?.status === 'pending'
-                          ? '#E8F5E9'
-                          : '#FFEBEE',
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.statusTextPlain,
-                      {
-                        color:
-                          selectedItem?.status === 'Available' || selectedItem?.status === 'pending'
-                            ? '#27AE60'
-                            : '#AF0B01',
-                      },
-                    ]}
-                  >
-                    {selectedItem?.status}
+                <View style={[styles.statusBadge, { backgroundColor: badgeBackground }]}>
+                  <Text style={[styles.statusTextPlain, { color: badgeTextColor }]}>
+                    {displayStatus}
                   </Text>
                 </View>
               </View>
 
-              {/* TITLE AND PRICING DISPLAY */}
-              <View style={{ 
-                flexDirection: 'row', 
-                justifyContent: 'space-between', 
+              {/* TITLE AND PRICE */}
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
                 alignItems: 'flex-start',
-                marginBottom: scale(10)
+                marginBottom: scale(10),
               }}>
-                
-                <Text 
-                  style={[styles.modalTitle, { flex: 1, marginRight: scale(10), fontWeight: 600 }]}
+                <Text
+                  style={[styles.modalTitle, { flex: 1, marginRight: scale(10), fontWeight: '600' }]}
                   numberOfLines={2}
                 >
                   {selectedItem?.name || selectedItem?.title}
                 </Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                  <Text style={[styles.modalPrice, { marginBottom: 0, fontWeight: 700 }]}>
+                  <Text style={[styles.modalPrice, { marginBottom: 0, fontWeight: '700' }]}>
                     {selectedItem?.price}
                   </Text>
-
                   {selectedItem?.rentalPeriod && (
-                    <Text style={[styles.modalPrice, { 
-                      marginBottom: 0, 
-                      fontSize: scale(16), 
-                      color: '#1976D2' 
-                    }]}>
+                    <Text style={[styles.modalPrice, { marginBottom: 0, fontSize: scale(16), color: '#1976D2' }]}>
                       {' '}/ {selectedItem.rentalPeriod}
                     </Text>
                   )}
                 </View>
-
               </View>
 
               <View style={[styles.divider, { marginBottom: scale(20) }]} />
 
-              {/* DATA CARD FOR OWNER INFO, DESCRIPTION, AND LOCATION */}
+              {/* ITEM DETAILS CARD */}
               <View style={{ backgroundColor: '#FFFFFF', borderRadius: scale(12), overflow: 'hidden' }}>
 
-
+                {/* Owner */}
                 <View style={{ paddingHorizontal: scale(15), paddingVertical: scale(14), borderBottomWidth: 1, borderBottomColor: '#F0F0F0' }}>
                   <Text style={{ fontSize: scale(13), fontWeight: '700', color: '#9CA3AF' }}>Owner</Text>
-
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: scale(4) }}>
-                    <View
-                      style={{
-                        width: scale(28),
-                        height: scale(28),
-                        borderRadius: scale(14),
-                        backgroundColor: '#222D31',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginRight: scale(10),
-                        overflow: 'hidden',
-                      }}
-                    >
+                    <View style={{
+                      width: scale(28),
+                      height: scale(28),
+                      borderRadius: scale(14),
+                      backgroundColor: '#222D31',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: scale(10),
+                      overflow: 'hidden',
+                    }}>
                       {ownerPhoto ? (
                         <Image source={{ uri: ownerPhoto }} style={{ width: '100%', height: '100%' }} />
                       ) : (
@@ -323,9 +354,8 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
                         </Text>
                       )}
                     </View>
-
                     <View style={{ flex: 1 }}>
-                      <Text 
+                      <Text
                         style={{ fontSize: scale(15), fontWeight: '700', color: '#222D31' }}
                         numberOfLines={1}
                         ellipsizeMode="tail"
@@ -336,24 +366,21 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
                   </View>
                 </View>
 
-
+                {/* Description */}
                 <View style={{ paddingHorizontal: scale(15), paddingVertical: scale(14), borderBottomWidth: 1, borderBottomColor: '#F0F0F0' }}>
                   <Text style={{ fontSize: scale(13), fontWeight: '700', color: '#9CA3AF' }}>Description</Text>
-
                   <Text style={{ fontSize: scale(15), fontWeight: '600', color: '#222D31', marginTop: scale(4), lineHeight: scale(20) }}>
                     {selectedItem?.description || 'No description provided.'}
                   </Text>
                 </View>
 
-
+                {/* Location */}
                 <View style={{ paddingHorizontal: scale(15), paddingVertical: scale(14), borderBottomWidth: 1, borderBottomColor: '#F0F0F0' }}>
                   <Text style={{ fontSize: scale(13), fontWeight: '700', color: '#9CA3AF' }}>Location</Text>
-
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: scale(4) }}>
                     <Ionicons name="location-outline" size={scale(16)} color="#AF0B01" />
-
                     <View style={{ flex: 1 }}>
-                      <Text 
+                      <Text
                         style={{ fontSize: scale(15), fontWeight: '600', color: '#222D31', marginLeft: scale(5) }}
                         numberOfLines={1}
                         ellipsizeMode="tail"
@@ -364,13 +391,11 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
                   </View>
                 </View>
 
-
+                {/* Posted On */}
                 <View style={{ paddingHorizontal: scale(15), paddingVertical: scale(14) }}>
                   <Text style={{ fontSize: scale(13), fontWeight: '700', color: '#9CA3AF' }}>Posted On</Text>
-
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: scale(4) }}>
                     <Ionicons name="time-outline" size={scale(16)} color="#AF0B01" />
-
                     <Text style={{ fontSize: scale(15), fontWeight: '600', color: '#222D31', marginLeft: scale(5) }}>
                       {formatPostedDate(selectedItem?.createdAt || selectedItem?.timestamp)}
                     </Text>
@@ -379,75 +404,69 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
 
               </View>
 
-              {/* LEGAL AND PLATFORM DISCLAIMER */}
+              {/* DISCLAIMER */}
               <View style={{
                 marginTop: scale(15),
                 padding: scale(15),
                 borderRadius: scale(12),
                 backgroundColor: '#E3F2FD',
                 borderWidth: 1,
-                borderColor: '#1976D2'
+                borderColor: '#1976D2',
               }}>
-
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: scale(6)
-                }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: scale(6) }}>
                   <Ionicons name="information-circle-outline" size={scale(18)} color="#1976D2" />
-
-                  <Text style={{
-                    fontSize: scale(13),
-                    fontWeight: '700',
-                    color: '#1976D2',
-                    marginLeft: scale(6)
-                  }}>
+                  <Text style={{ fontSize: scale(13), fontWeight: '700', color: '#1976D2', marginLeft: scale(6) }}>
                     Disclaimer
                   </Text>
                 </View>
-
-                <Text style={{
-                  fontSize: scale(13),
-                  lineHeight: scale(18),
-                  fontWeight: 500,
-                  color: '#1976D2'
-                }}>
+                <Text style={{ fontSize: scale(13), lineHeight: scale(18), fontWeight: '500', color: '#1976D2' }}>
                   Please note that our platform does not handle payments directly.
                 </Text>
-
               </View>
 
             </View>
           </ScrollView>
 
-          {/* UI FOOTER SECTION WITH ACTION BUTTON */}
+          {/* FOOTER */}
           <View style={[styles.modalFooter, { paddingBottom: Platform.OS === 'ios' ? scale(30) : scale(15) }]}>
-            <TouchableOpacity
-              style={[styles.messageBtn, { borderRadius: scale(50), height: scale(46), marginHorizontal: scale(5) }]}
-              onPress={handleActionTrigger}
-            >
-              <Ionicons
-                name={isOwner ? 'create-outline' : 'chatbubble-ellipses-outline'}
-                size={scale(20)}
-                color="#FFFFFF"
-                style={{ marginRight: 8 }}
-              />
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
 
-              <Text style={styles.messageBtnText}>
-                {isOwner
-                  ? 'Edit Item'
-                  : selectedItem?.status === 'rented'
-                  ? 'Not Available'
-                  : 'Rent Now'}
-              </Text>
-            </TouchableOpacity>
+              {/* CHAT BUTTON — renters only */}
+              {!isOwner && (
+                <TouchableOpacity style={styles.chatActionBtn} onPress={handleOpenChat}>
+                  <Ionicons
+                    name="chatbubble-ellipses-outline"
+                    size={scale(20)}
+                    color="#222D31"
+                  />
+                </TouchableOpacity>
+              )}
+
+              {/* PRIMARY ACTION BUTTON */}
+              <TouchableOpacity
+                style={[styles.messageBtn, { borderRadius: scale(50), height: scale(46), marginHorizontal: scale(5) }]}
+                onPress={handleActionTrigger}
+              >
+                <Ionicons
+                  name={isOwner ? 'create-outline' : 'cart-outline'}
+                  size={scale(20)}
+                  color="#FFFFFF"
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={styles.messageBtnText}>
+                  {isOwner
+                    ? 'Edit Item'
+                    : isUnavailable
+                    ? 'Not Available'
+                    : 'Rent Now'}
+                </Text>
+              </TouchableOpacity>
+
+            </View>
           </View>
-
 
         </SafeAreaView>
       </Modal>
-
-
     </View>
   );
 };

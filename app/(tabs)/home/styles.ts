@@ -266,7 +266,7 @@ export const styles = StyleSheet.create({
     width: CATEGORY_CARD_WIDTH,
     backgroundColor: COLORS.surface,
     borderRadius: 15,
-    borderColor: COLORS.borderMedium,
+    borderColor: '#ffffff',
     borderWidth: 1,
     paddingVertical: scale(15),
     alignItems: 'center',
@@ -456,8 +456,9 @@ export const styles = StyleSheet.create({
   // Hero image in details view
   modalImage: {
     width: width,
-    height: height * 0.4,
-    resizeMode: 'cover',
+    aspectRatio: 4 / 3,
+    resizeMode: 'contain',
+    backgroundColor: '#F0F0F0',
   },
 
 
@@ -617,5 +618,23 @@ export const styles = StyleSheet.create({
     color: COLORS.dark,
     marginTop: scale(2),
   },
+
+
+  chatActionBtn: {
+  width: scale(50),
+  height: scale(46),
+  borderRadius: scale(50),
+  backgroundColor: '#FFFFFF',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: '#E5E7EB',
+  marginRight: scale(10),
+  marginLeft: scale(5),
+},
+
+chatActionIcon: {
+  //for future overrides styles
+},
   
 });

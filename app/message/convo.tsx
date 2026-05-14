@@ -247,7 +247,7 @@ const MessageBubble = ({
           shadowOpacity: 0.08,
           shadowRadius: 4,
         }
-      : { elevation: 2 };
+      : { elevation: 0 };
 
   // Fallback
   const senderInitial = (messageData.senderEmail as string)?.charAt(0).toUpperCase() ?? '?';

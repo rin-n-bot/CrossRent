@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   // Main title text inside the header
   headerTitle: { 
     fontSize: 18, 
-    fontWeight: '800', 
+    fontWeight: '700', 
     color: COLOR_PURE_WHITE 
   },
 
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   // Style for chips that are not currently selected
   chipInactive: { 
     backgroundColor: COLOR_PURE_WHITE, 
-    borderColor: COLOR_BORDER_GRAY,
+    borderColor: '#ffffff',
     borderWidth: 1,
   },
 

@@ -72,7 +72,8 @@ export default function ProfileScreen() {
     originalPic.current = '';
 
     fetchProfile();
-    fetchStats();
+      const cleanup = fetchStats();
+      return () => { cleanup?.(); };
   }, [targetId]);
 
 
@@ -109,8 +110,18 @@ export default function ProfileScreen() {
   // REAL-TIME LISTENERS FOR USER STATISTICS
   const fetchStats = () => {
     if (!targetId) return;
-    onSnapshot(query(collection(db, 'items'), where('ownerId', '==', targetId)), (snap) => setListingsCount(snap.size));
-    onSnapshot(query(collection(db, 'transactions'), where('renterId', '==', targetId)), (snap) => setTransactionsCount(snap.size));
+    const unsubItems = onSnapshot(
+      query(collection(db, 'items'), where('ownerId', '==', targetId)),
+      (snap) => setListingsCount(snap.size)
+    );
+    const unsubTx = onSnapshot(
+      query(collection(db, 'transactions'), where('renterId', '==', targetId)),
+      (snap) => setTransactionsCount(snap.size)
+    );
+    return () => {
+      unsubItems();
+      unsubTx();
+    };
   };
 
 

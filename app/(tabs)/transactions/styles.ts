@@ -70,7 +70,7 @@ export const transStyles = StyleSheet.create({
   // Primary text for the item name within the card
   cardTitle: {
     fontSize: scale(16),
-    fontWeight: '700',
+    fontWeight: '600',
     color: TEXT_DARK,
   },
 

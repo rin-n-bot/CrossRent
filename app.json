@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "CrossRent-App",
-    "slug": "CrossRent-App",
+    "name": "CrossRent",
+    "slug": "crossrent",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -20,7 +20,11 @@
       },
       "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "resize",
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.rinmntzk.crossrent"
     },
     "web": {
       "output": "static",
@@ -52,6 +56,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "401b7aa7-f465-43f9-ae42-babba7b6a70b"
+      }
     }
   }
 }

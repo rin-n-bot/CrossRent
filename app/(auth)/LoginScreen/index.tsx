@@ -15,7 +15,6 @@ import {
   View
 } from 'react-native';
 import { auth, db } from '../../../firebase';
-import { AuthToggle } from './components/AuthToggle';
 import { InputField } from './components/InputField';
 import { styles } from './styles';
 
@@ -129,7 +128,7 @@ export default function LoginScreen() {
         Cross<Text style={{ color: '#AF0B01' }}>Rent</Text>
       </Text>
       <Text style={styles.heroHeader}>
-        {isLogin ? 'Welcome Back' : 'Create Account'}
+        {isLogin ? 'Welcome Back' : 'Get Started'}
       </Text>
       <Text style={[styles.quote, { marginTop: 10 }]}>
         Exclusive for Holy Cross of Davao College users.
@@ -156,7 +155,8 @@ export default function LoginScreen() {
             
             {renderHeader()}
 
-            <AuthToggle isLogin={isLogin} setIsLogin={setIsLogin} />
+            {/* Spacer preserving the vertical gap previously occupied by AuthToggle */}
+            <View style={{ marginBottom: 70 }} />
 
             <View style={styles.form}>
               <InputField 
@@ -195,12 +195,17 @@ export default function LoginScreen() {
                   {isLogin ? 'Sign In' : 'Create Account'}
                 </Text>
               </TouchableOpacity>
-              
-              {isLogin && (
-                <TouchableOpacity style={styles.forgotBtn}>
-                  <Text style={styles.forgotText}>Forgot Password?</Text>
-                </TouchableOpacity>
-              )}
+
+              <TouchableOpacity
+                style={styles.forgotBtn}
+                onPress={() => setIsLogin(!isLogin)}
+              >
+                <Text style={styles.forgotText}>
+                  {isLogin
+                    ? "Don't have an account? Sign up here."
+                    : "Already have an account? Sign in here."}
+                </Text>
+              </TouchableOpacity>
 
               <View style={styles.footerLogoContainer}>
                 <Image 

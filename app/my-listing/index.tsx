@@ -54,6 +54,8 @@ export default function MyListingScreen() {
    
    // FETCH AND FORMAT GLOBAL CATEGORIES FROM FIRESTORE
    useEffect(() => {
+        const user = auth.currentUser;
+        if (!user) return;
        const unsub = onSnapshot(collection(db, 'categories'), (snapshot) => {
            const formatName = (id: string) =>
                id.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -124,12 +126,20 @@ export default function MyListingScreen() {
 
 
    // FILTER ITEMS ARRAY BASED ON SELECTED CATEGORY PILL
-   const filteredItems = items.filter((item) => {
-       if (activeCategory === 'All') return true;
-       const itemCat = (item.category || '').toLowerCase().trim();
-       const selected = activeCategory.toLowerCase().trim();
-       return itemCat === selected || itemCat === selected + 's' || itemCat + 's' === selected;
-   });
+   const normalizeCategory = (str: string) =>
+    str
+        .toLowerCase()
+        .replace(/-/g, ' ')
+        .trim();
+
+    const filteredItems = items.filter((item) => {
+        if (activeCategory === 'All') return true;
+
+        const itemCat = normalizeCategory(item.category || '');
+        const selected = normalizeCategory(activeCategory);
+
+        return itemCat === selected;
+    });
 
 
    // TRIGGER DELETE CONFIRMATION ALERT AND FIRESTORE ACTION
@@ -306,7 +316,7 @@ export default function MyListingScreen() {
                                            paddingVertical: scale(12),
                                            borderRadius: scale(25),
                                            borderWidth: 1,
-                                           borderColor: isActive ? '#222D31' : '#cfd4da',
+                                           borderColor: isActive ? '#222D31' : '#ffffff',
                                            backgroundColor: isActive ? '#222D31' : '#FFF',
                                            alignItems: 'center',
                                            marginBottom: scale(10),
@@ -337,7 +347,7 @@ export default function MyListingScreen() {
                    </View>
                ) : (
 
-                   /* MAIN DATA FLATLIST */
+                   /* MAIN DATA */
                    <FlatList
                        data={filteredItems}
                        keyExtractor={(item) => item.id}

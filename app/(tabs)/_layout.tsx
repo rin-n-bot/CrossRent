@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: scale(22),
-    marginBottom: 6,
+    marginBottom: 2,
   },
   pill: {
     flex: 1,
