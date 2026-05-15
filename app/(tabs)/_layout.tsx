@@ -1,10 +1,11 @@
 import { Redirect, Tabs } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { ActivityIndicator, View } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, StyleSheet, Platform, Dimensions, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import NetInfo from '@react-native-community/netinfo';
 
 const { width } = Dimensions.get('window');
 const scale = (size: number) => (width / 375) * size;
@@ -61,16 +62,128 @@ function TabItem({ route, isFocused, onPress }: any) {
         <Ionicons
           name={(isFocused ? icon : `${icon}-outline`) as any}
           size={scale(22)}
-          color={isFocused ? '#AF0B01' : '#cfd4da'}
+          color={isFocused ? '#AF0B01' : '#6B7280'}
         />
       </Animated.View>
       <Text
         numberOfLines={1}
-        style={[styles.navLabel, { color: isFocused ? '#AF0B01' : '#cfd4da' }]}
+        style={[styles.navLabel, { color: isFocused ? '#AF0B01' : '#6B7280' }]}
       >
         {label}
       </Text>
     </TouchableOpacity>
+  );
+}
+
+function NetworkBanner() {
+  const [status, setStatus] = useState<'offline' | 'reconnecting' | 'online' | 'hidden'>('hidden');
+  const translateY = useRef(new Animated.Value(20)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstMount = useRef(true);
+
+  const showBanner = (newStatus: 'offline' | 'online') => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    setStatus(newStatus);
+    Animated.parallel([
+      Animated.spring(translateY, { toValue: 0, friction: 6, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+    ]).start();
+
+    if (newStatus === 'online') {
+      hideTimer.current = setTimeout(() => hideBanner(), 3000);
+    }
+  };
+
+  const hideBanner = () => {
+    Animated.parallel([
+      Animated.timing(translateY, { toValue: 20, duration: 200, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
+    ]).start(() => setStatus('hidden'));
+  };
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      const isConnected = state.isConnected && state.isInternetReachable;
+
+      if (isFirstMount.current) {
+        // isInternetReachable starts as null, wait for it to resolve
+        if (state.isInternetReachable === null) return;
+        isFirstMount.current = false;
+        if (!isConnected) showBanner('offline');
+        return;
+      }
+
+      if (!isConnected) {
+        showBanner('offline');
+      } else {
+        setStatus('reconnecting');
+        setTimeout(() => showBanner('online'), 1500);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+    };
+  }, []);
+
+  if (status === 'hidden') return null;
+
+  const isOffline = status === 'offline';
+  const isOnline = status === 'online';
+  const isReconnecting = status === 'reconnecting';
+
+  return (
+    <Animated.View style={{
+      position: 'absolute',
+      bottom: Platform.OS === 'ios' ? scale(90) : scale(78),
+      alignSelf: 'center',
+      zIndex: 999,
+      opacity,
+      transform: [{ translateY }],
+    }}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingHorizontal: scale(14),
+        paddingVertical: scale(8),
+        borderRadius: scale(20),
+        backgroundColor: isOnline ? '#1D9E75' : '#222D31',
+      }}>
+        <Ionicons
+          name={isOffline ? 'cloud-offline-outline' : 'wifi-outline'}
+          size={scale(15)}
+          color="#fff"
+        />
+        <Text style={{ color: '#fff', fontSize: scale(13), fontWeight: '600' }}>
+          {isOffline && "You're offline"}
+          {isReconnecting && 'Reconnecting...'}
+          {isOnline && "You're now online"}
+        </Text>
+
+        {isOffline && (
+          <TouchableOpacity
+            onPress={hideBanner}
+            style={{
+              width: scale(18),
+              height: scale(18),
+              borderRadius: scale(9),
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Ionicons name="close" size={scale(11)} color="#fff" />
+          </TouchableOpacity>
+        )}
+
+        {isReconnecting && (
+          <ActivityIndicator size="small" color="#fff" style={{ width: scale(18), height: scale(18) }} />
+        )}
+      </View>
+    </Animated.View>
   );
 }
 
@@ -81,6 +194,8 @@ function GlassCapsuleNav({ state, navigation }: any) {
 
   return (
     <View style={styles.container}>
+      <NetworkBanner />
+
       <View style={styles.pill}>
         <View style={styles.capsule}>
           {visibleRoutes.map((route: any) => {
@@ -130,7 +245,7 @@ const styles = StyleSheet.create({
   pill: {
     flex: 1,
     borderRadius: scale(32),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#222D31',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
