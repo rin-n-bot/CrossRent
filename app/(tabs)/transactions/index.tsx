@@ -17,7 +17,6 @@ import {
   Alert,
   Animated,
   FlatList,
-  SafeAreaView,
   StatusBar,
   Text,
   TouchableOpacity,
@@ -27,6 +26,7 @@ import {
 import { auth, db } from '../../../firebase';
 import { updateTransactionStatus } from '../../../services/transactionService';
 import { scale, transStyles as styles } from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Transaction {
   id: string;

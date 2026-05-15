@@ -9,7 +9,6 @@ import {
   Animated,
   InteractionManager,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -25,6 +24,7 @@ import { ModalItemDetails } from '../../modal/ModalItemDetails';
 import { CategoryCard } from '../home/components/CategoryCard';
 import { ListingCard } from '../home/components/ListingCard';
 import { scale, styles } from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 // Global constants for configuration and styling
@@ -357,10 +357,10 @@ useEffect(() => {
   };
 
   
-  // Master UI layout
+  // Main UI layout
   return (
     <View style={{ flex: 1, backgroundColor: LIGHT_GRAY }}>
-      <SafeAreaView style={[styles.container, { backgroundColor: LIGHT_GRAY }]}>
+      <SafeAreaView style={[styles.container, { flex: 1, backgroundColor: LIGHT_GRAY }]}>
         <StatusBar barStyle={isDrawerOpen || selectedItem ? 'light-content' : 'dark-content'} />
 
         <ModalItemDetails selectedItem={selectedItem} setSelectedItem={setSelectedItem} />

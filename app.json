@@ -16,7 +16,6 @@
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundColor": "#1B2631"
       },
-      "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "resize",
       "predictiveBackGestureEnabled": false,
       "permissions": [

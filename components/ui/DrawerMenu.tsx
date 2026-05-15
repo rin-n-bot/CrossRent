@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Animated, ScrollView, View, TouchableOpacity, Text, Alert, Modal, SafeAreaView, Platform } from 'react-native';
+import { Animated, ScrollView, View, TouchableOpacity, Text, Alert, Modal, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
@@ -7,6 +7,7 @@ import { db } from '../../firebase';
 import { styles, scale } from '../../app/(tabs)/home/styles';
 import { useDrawer } from '../../context/DrawerContext';
 import { useAuth } from '../../context/AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 // MAIN DRAWER NAVIGATION MENU

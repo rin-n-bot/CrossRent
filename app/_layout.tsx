@@ -7,6 +7,7 @@ import { DrawerMenu } from '../components/ui/DrawerMenu';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { DrawerProvider } from '../context/DrawerContext';
 import { db } from '../firebase';
+import { StatusBar } from 'expo-status-bar';
 
 function RootLayoutContent() {
   const { user, loading } = useAuth();
@@ -87,6 +88,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <SafeAreaProvider>
+        <StatusBar style="auto" translucent={false} /> 
         <RootLayoutContent />
       </SafeAreaProvider>
     </AuthProvider>

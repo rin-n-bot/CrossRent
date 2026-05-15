@@ -4,7 +4,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -18,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 import styles from './styles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 // Standard options for the form selection chips
@@ -37,6 +37,7 @@ const CATEGORY_SLUG_MAP: Record<string, string> = {
 
 export default function AddScreen() {
   const navigationRouter = useRouter();
+  const insets = useSafeAreaInsets();
 
 
   // Hold the form data in local state
@@ -121,10 +122,10 @@ export default function AddScreen() {
   };
 
 
-  // Show the red top bar with back and post buttons
+  // Show the red top bar with back and post buttons (now with extra adaptive padding)
   const renderHeader = () => (
     <View style={styles.redHeader}>
-      <SafeAreaView>
+      <View style={{ paddingBottom: 10, paddingTop: insets.top + 10 }}>
         <View style={styles.headerContent}>
           <TouchableOpacity onPress={() => navigationRouter.back()} style={styles.iconButton}>
             <Ionicons name="close-outline" size={30} color="#FFF" />
@@ -134,7 +135,7 @@ export default function AddScreen() {
             <Text style={[styles.postBtnText, { fontWeight: 700 }]}>Post</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     </View>
   );
 
@@ -192,6 +193,8 @@ export default function AddScreen() {
     </View>
   );
 
+
+  // Main UI layout
   return (
     <View style={styles.mainWrapper}>
       <StatusBar barStyle="light-content" backgroundColor="#AF0B01" />
@@ -202,7 +205,13 @@ export default function AddScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.formContainer} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          contentContainerStyle={[
+            styles.formContainer,
+            { paddingTop: 16 }
+          ]} 
+          showsVerticalScrollIndicator={false}
+        >
           
           <Text style={styles.label}>Item Name</Text>
           <TextInput 

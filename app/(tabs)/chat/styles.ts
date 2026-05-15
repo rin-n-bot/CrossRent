@@ -32,7 +32,6 @@ export const chatStyles = StyleSheet.create({
   // Header and Navigation styles
   redHeader: {
     backgroundColor: COLORS.primary,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   safeAreaCustom: {
     backgroundColor: COLORS.primary,

@@ -17,7 +17,6 @@ import {
   Image,
   Modal,
   Platform,
-  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -26,6 +25,7 @@ import {
 import { scale, styles } from '../(tabs)/home/styles';
 import { auth, db } from '../../firebase';
 import { handleRentRequest } from '../../services/transactionService';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface ModalItemDetailsProps {
@@ -428,7 +428,7 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
           </ScrollView>
 
           {/* FOOTER */}
-          <View style={[styles.modalFooter, { paddingBottom: Platform.OS === 'ios' ? scale(30) : scale(15) }]}>
+          <View style={[styles.modalFooter, { paddingBottom: Platform.OS === 'ios' ? scale(30) : scale(15), marginBottom: scale(10), }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
 
               {/* CHAT BUTTON — renters only */}

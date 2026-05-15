@@ -11,6 +11,8 @@ export const listingStyles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
+  
+
 
   // HEADER STYLING
   header: {
@@ -20,11 +22,13 @@ export const listingStyles = StyleSheet.create({
   },
 
   headerContent: {
-    height: scale(50),
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: LAYOUT.horizontalPadding,
-  },
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingHorizontal: LAYOUT.horizontalPadding,
+
+  paddingVertical: 12, // 👈 THIS replaces fixed height
+},
 
   headerTitle: {
     flex: 1,

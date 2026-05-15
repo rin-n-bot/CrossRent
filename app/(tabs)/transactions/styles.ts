@@ -25,7 +25,6 @@ export const transStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: BACKGROUND_LIGHT,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
 
 

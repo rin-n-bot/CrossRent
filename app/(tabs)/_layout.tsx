@@ -9,7 +9,6 @@ import NetInfo from '@react-native-community/netinfo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 //  Constants 
-
 const NAV_HEIGHT = 62;
 const NAV_BOTTOM_OFFSET = 12;
 const ADD_BTN_SIZE = 58;
@@ -20,8 +19,8 @@ const BANNER_ONLINE_DURATION = 3000;
 
 const COLORS = {
   active: '#AF0B01',
-  inactive: '#6B7280',
-  navBg: '#222D31',
+  inactive: '#cfd4da',
+  navBg: '#ffffff',
   addBtn: '#AF0B01',
   online: '#1D9E75',
   white: '#fff',
@@ -29,7 +28,6 @@ const COLORS = {
 };
 
 //  Route Config 
-
 const ROUTES: Record<string, { icon: string; label: string }> = {
   home: { icon: 'home', label: 'Home' },
   chat: { icon: 'chatbubbles', label: 'Chats' },
@@ -37,7 +35,6 @@ const ROUTES: Record<string, { icon: string; label: string }> = {
 };
 
 //  Root Layout 
-
 export default function TabsLayout() {
   const { user, loading } = useAuth();
 
@@ -65,7 +62,6 @@ export default function TabsLayout() {
 }
 
 //  Tab Item 
-
 function TabItem({ route, isFocused, onPress }: any) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -98,7 +94,6 @@ function TabItem({ route, isFocused, onPress }: any) {
 }
 
 //  Network Banner 
-
 function NetworkBanner() {
   const [status, setStatus] = useState<'offline' | 'reconnecting' | 'online' | 'hidden'>('hidden');
   const translateY = useRef(new Animated.Value(20)).current;
@@ -156,7 +151,8 @@ function NetworkBanner() {
   const isOffline = status === 'offline';
   const isOnline = status === 'online';
   const isReconnecting = status === 'reconnecting';
-  const bannerBottom = NAV_HEIGHT + insets.bottom + NAV_BOTTOM_OFFSET;
+  const safeBottom = Math.min(insets.bottom, 24);
+  const bannerBottom = NAV_HEIGHT + safeBottom + NAV_BOTTOM_OFFSET;
 
   return (
     <Animated.View style={[styles.bannerWrapper, { bottom: bannerBottom, opacity, transform: [{ translateY }] }]}>
@@ -187,17 +183,17 @@ function NetworkBanner() {
   );
 }
 
-//  Glass Capsule Nav 
-
+//  Glass Capsule Nav Bar
 function GlassCapsuleNav({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
+  const safeBottom = Math.min(insets.bottom, 24);
 
   const visibleRoutes = state.routes.filter(
     (route: any) => route.name !== 'profile/index'
   );
 
   return (
-    <View style={[styles.container, { bottom: insets.bottom + NAV_BOTTOM_OFFSET }]}>
+    <View style={[styles.container, { bottom: safeBottom + NAV_BOTTOM_OFFSET }]}>
       <NetworkBanner />
 
       <View style={styles.pill}>
@@ -232,9 +228,8 @@ function GlassCapsuleNav({ state, navigation }: any) {
 }
 
 //  Styles 
-
 const styles = StyleSheet.create({
-  // Navbar outer container — anchored to bottom via insets
+
   container: {
     position: 'absolute',
     width: '100%',
@@ -244,7 +239,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
 
-  // Dark pill that holds the tab items
   pill: {
     flex: 1,
     borderRadius: 32,
@@ -253,9 +247,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
-    elevation: 14,
+    elevation: 40,
   },
-
 
   capsule: {
     flexDirection: 'row',
@@ -264,14 +257,12 @@ const styles = StyleSheet.create({
     borderRadius: 32,
   },
 
-
   navItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%',
+    height: NAV_HEIGHT,  // ← fixed: was '100%'
   },
-
 
   navLabel: {
     fontSize: LABEL_SIZE,
@@ -280,13 +271,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // Container for the add button beside the pill
   addWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-  // Red circular add button
   inlineAddBtn: {
     width: ADD_BTN_SIZE,
     height: ADD_BTN_SIZE,
@@ -302,13 +291,11 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
 
-  // Animated wrapper that positions the banner above the navbar
   bannerWrapper: {
     position: 'absolute',
     alignSelf: 'center',
     zIndex: 999,
   },
-
 
   banner: {
     flexDirection: 'row',
@@ -319,13 +306,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 
-
   bannerText: {
     color: '#fff',
     fontSize: 13,
     fontWeight: '600',
   },
-
 
   bannerClose: {
     width: 18,

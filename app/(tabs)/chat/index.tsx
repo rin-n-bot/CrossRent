@@ -18,7 +18,6 @@ import {
   Animated,
   Dimensions,
   FlatList,
-  SafeAreaView,
   StatusBar,
   Text,
   TextInput,
@@ -29,6 +28,7 @@ import {
 import { auth, db } from '../../../firebase';
 import { scale, transStyles as styles } from '../transactions/styles';
 import { chatStyles } from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 // Set global layout and color constants
@@ -483,7 +483,7 @@ useEffect(() => {
   
   // Main UI layout
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: COLOR_BG }, isSelectionMode && { backgroundColor: COLOR_PRIMARY }]}>
+    <SafeAreaView style={[styles.container, { flex: 1,backgroundColor: COLOR_BG }, isSelectionMode && { backgroundColor: COLOR_PRIMARY }]}>
       <StatusBar barStyle={isSelectionMode ? 'light-content' : 'dark-content'} />
 
       {renderHeader()}

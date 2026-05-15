@@ -15,7 +15,6 @@ import {
     Alert,
     FlatList,
     Platform,
-    SafeAreaView,
     StatusBar,
     Text,
     TouchableOpacity,
@@ -27,6 +26,7 @@ import { auth, db } from '../../firebase';
 import { handleItemDelete } from '../../services/transactionService';
 import { COLORS } from '../../styles/global';
 import { listingStyles as styles } from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 // UI MEASUREMENTS AND SCALING CONSTANTS
@@ -187,6 +187,16 @@ export default function MyListingScreen() {
                        {item.price} / {(item.rentalPeriod || 'day').toLowerCase()}
                    </Text>
 
+                   <Text style={{
+                        fontSize: 12,
+                        fontWeight: '700',
+                        color: '#9CA3AF',
+                        marginTop: 4,
+                        textTransform: 'capitalize'
+                        }}>
+                        {item.category || 'Uncategorized'}
+                    </Text>
+
                    {/* DYNAMIC STATUS BADGE */}
                    <View style={{ flexDirection: 'row', marginTop: 6 }}>
                        <View style={{
@@ -232,11 +242,12 @@ export default function MyListingScreen() {
    
    // RENDER MAIN SCREEN COMPOSITION
    return (
-       <View style={{ flex: 1, backgroundColor: COLORS.background, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
+       <View style={{ flex: 1, backgroundColor: COLORS.background }}>
            
            {/* SYSTEM STATUS BAR CONFIGURATION */}
-           <StatusBar barStyle="dark-content" backgroundColor="white" translucent={true} />
-           <SafeAreaView style={{ flex: 0, backgroundColor: COLORS.background }} /> 
+           <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
+            <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+
 
 
            {/* TOP NAVIGATION BAR SECTION */}
@@ -366,6 +377,7 @@ export default function MyListingScreen() {
                    />
                )}
            </View>
+           </SafeAreaView>
        </View>
    );
 }

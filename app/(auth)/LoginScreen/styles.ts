@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
   // Branding and screen heading styles
   header: { 
     alignItems: 'flex-start', 
-    marginBottom: 60
+    marginBottom: 10
   },
   logo: { 
     fontSize: 18, 
@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
     fontSize: 13, 
     textAlign: 'left',
     color: '#999', 
-    fontWeight: '500',
+    fontWeight: '600',
     fontStyle: 'italic',
     lineHeight: 18
   },

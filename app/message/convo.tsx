@@ -5,7 +5,6 @@ import {
   FlatList,
   Keyboard,
   Platform,
-  SafeAreaView,
   StatusBar,
   Text,
   TextInput,
@@ -30,6 +29,7 @@ import {
 
 import { chatStyles } from '../(tabs)/chat/styles';
 import { auth, db } from '../../firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 // Constants 
@@ -335,7 +335,8 @@ const ChatHeader = ({
     <SafeAreaView style={chatStyles.safeAreaCustom}>
       <View
         style={{
-          height: 60,
+          height: 50,
+          paddingTop: 10,
           width: '100%',
           flexDirection: 'row',
           alignItems: 'center',

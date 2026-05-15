@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
   // Red header area with status bar padding for Android
   redHeader: { 
     backgroundColor: COLOR_PRIMARY_BRAND, 
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 
   },
 
 
@@ -40,8 +39,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'space-between', 
     alignItems: 'center', 
-    paddingHorizontal: 15, 
-    paddingVertical: 15 
+    paddingHorizontal: 15,  
   },
 
 

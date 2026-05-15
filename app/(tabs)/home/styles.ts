@@ -70,7 +70,6 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
 
 
@@ -577,7 +576,6 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.surface,
     overflow: 'hidden',
-    ...SHADOW_LIGHT,
   },
 
 

@@ -8,7 +8,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -17,6 +16,7 @@ import {
 import { auth, db } from '../../../firebase';
 import { InputField } from './components/InputField';
 import { styles } from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function LoginScreen() {

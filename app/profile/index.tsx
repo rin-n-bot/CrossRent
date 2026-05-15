@@ -16,7 +16,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -26,6 +25,7 @@ import {
 } from 'react-native';
 import { auth, db } from '../../firebase';
 import { profileStyles as styles, scale } from './styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 // MAIN PROFILE SCREEN COMPONENT
