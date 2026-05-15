@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { collection, deleteDoc, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DrawerMenu } from '../components/ui/DrawerMenu';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { DrawerProvider } from '../context/DrawerContext';
@@ -85,7 +86,9 @@ function RootLayoutContent() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootLayoutContent />
+      <SafeAreaProvider>
+        <RootLayoutContent />
+      </SafeAreaProvider>
     </AuthProvider>
   );
 }
