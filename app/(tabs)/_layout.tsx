@@ -1,15 +1,12 @@
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Tabs, router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
-import { ActivityIndicator, View } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
-//  Constants Layout
 const NAV_HEIGHT = 62;
 const NAV_BOTTOM_OFFSET = 12;
 const ADD_BTN_SIZE = 58;
@@ -18,8 +15,6 @@ const LABEL_SIZE = 11;
 const BANNER_APPEAR_DELAY = 1500;
 const BANNER_ONLINE_DURATION = 3000;
 
-
-//  Colors for consistency
 const COLORS = {
   active: '#AF0B01',
   inactive: '#cfd4da',
@@ -30,20 +25,13 @@ const COLORS = {
   bannerClose: 'rgba(255,255,255,0.2)',
 };
 
-
-//  Route Config 
 const ROUTES: Record<string, { icon: string; label: string }> = {
   home: { icon: 'home', label: 'Home' },
   chat: { icon: 'chatbubbles', label: 'Chats' },
   transactions: { icon: 'swap-horizontal', label: 'Transact' },
 };
 
-
-//  Root Layout 
 export default function TabsLayout() {
-
-
-  // Authentication check
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -68,26 +56,21 @@ export default function TabsLayout() {
   );
 }
 
-
-//  Tab Item 
 function TabItem({ route, isFocused, onPress }: any) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Animate scale on focus change
   useEffect(() => {
     Animated.spring(scaleAnim, {
       toValue: isFocused ? 1.05 : 1,
       friction: 5,
       useNativeDriver: true,
     }).start();
-  }, [isFocused]);
+  }, [isFocused, scaleAnim]);
 
-  // Determine icon and label based on route name
   const routeKey = Object.keys(ROUTES).find((key) => route.name.includes(key));
   const { icon, label } = routeKey ? ROUTES[routeKey] : { icon: 'help-outline', label: route.name };
   const color = isFocused ? COLORS.active : COLORS.inactive;
 
-  // Render the tab item with animated scaling and appropriate icon/label
   return (
     <TouchableOpacity onPress={onPress} style={styles.navItem} activeOpacity={0.7}>
       <Animated.View style={{ transform: [{ scale: scaleAnim }], alignItems: 'center' }}>
@@ -104,8 +87,6 @@ function TabItem({ route, isFocused, onPress }: any) {
   );
 }
 
-
-//  Network Banner 
 function NetworkBanner() {
   const [status, setStatus] = useState<'offline' | 'reconnecting' | 'online' | 'hidden'>('hidden');
   const translateY = useRef(new Animated.Value(20)).current;
@@ -114,28 +95,25 @@ function NetworkBanner() {
   const isFirstMount = useRef(true);
   const insets = useSafeAreaInsets();
 
-  // Animation sequence for showing/hiding the banner
-  const animate = (visible: boolean) =>
+  const animate = useCallback((visible: boolean) =>
     Animated.parallel([
       Animated.spring(translateY, { toValue: visible ? 0 : 20, friction: 6, useNativeDriver: true }),
       Animated.timing(opacity, { toValue: visible ? 1 : 0, duration: 200, useNativeDriver: true }),
-    ]);
+    ]), [translateY, opacity]);
 
-  // Show banner with appropriate status and auto-hide if coming online
-  const showBanner = (newStatus: 'offline' | 'online') => {
+  const hideBanner = useCallback(() => {
+    animate(false).start(() => setStatus('hidden'));
+  }, [animate]);
+
+  const showBanner = useCallback((newStatus: 'offline' | 'online') => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
     setStatus(newStatus);
     animate(true).start();
     if (newStatus === 'online') {
       hideTimer.current = setTimeout(hideBanner, BANNER_ONLINE_DURATION);
     }
-  };
+  }, [animate, hideBanner]);
 
-  const hideBanner = () => {
-    animate(false).start(() => setStatus('hidden'));
-  };
-
-  // Network status listener setup on mount
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       const isConnected = state.isConnected && state.isInternetReachable;
@@ -159,63 +137,50 @@ function NetworkBanner() {
       unsubscribe();
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
-  }, []);
+  }, [showBanner]);
 
   if (status === 'hidden') return null;
 
-  // Derived states for cleaner conditional rendering
   const isOffline = status === 'offline';
   const isOnline = status === 'online';
   const isReconnecting = status === 'reconnecting';
   const safeBottom = Math.min(insets.bottom, 24);
   const bannerBottom = NAV_HEIGHT + safeBottom + NAV_BOTTOM_OFFSET;
 
-  // Render the animated banner with dynamic content based on network status
   return (
     <Animated.View style={[styles.bannerWrapper, { bottom: bannerBottom, opacity, transform: [{ translateY }] }]}>
       <View style={[styles.banner, { backgroundColor: isOnline ? COLORS.online : COLORS.navBg }]}>
-
         <Ionicons
           name={isOffline ? 'cloud-offline-outline' : 'wifi-outline'}
           size={15}
           color={COLORS.white}
         />
-
         <Text style={styles.bannerText}>
           {isOffline && "You're offline"}
           {isReconnecting && 'Reconnecting...'}
           {isOnline && "You're now online"}
         </Text>
-
         {isOffline && (
           <TouchableOpacity onPress={hideBanner} style={styles.bannerClose}>
             <Ionicons name="close" size={11} color={COLORS.white} />
           </TouchableOpacity>
         )}
-
         {isReconnecting && (
           <ActivityIndicator size="small" color={COLORS.white} style={{ width: 18, height: 18 }} />
         )}
-
       </View>
     </Animated.View>
   );
 }
 
-
-//  Capsule Nav Bar
 function CapsuleNav({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const safeBottom = Math.min(insets.bottom, 24);
-
   const visibleRoutes = state.routes;
 
-  //  Router instance for navigation
   return (
     <View style={[styles.container, { bottom: safeBottom + NAV_BOTTOM_OFFSET }]}>
-      
       <NetworkBanner />
-
       <View style={styles.pill}>
         <View style={styles.capsule}>
           {visibleRoutes.map((route: any) => {
@@ -233,25 +198,20 @@ function CapsuleNav({ state, navigation }: any) {
           })}
         </View>
       </View>
-
       <View style={styles.addWrapper}>
         <TouchableOpacity
-          onPress={() => router.push('../add-listing')}
+          onPress={() => router.push('/add-listing')}
           activeOpacity={0.85}
           style={styles.inlineAddBtn}
         >
           <Ionicons name="add" size={28} color={COLORS.white} />
         </TouchableOpacity>
       </View>
-
     </View>
   );
 }
 
-
-//  Styles 
 const styles = StyleSheet.create({
-
   container: {
     position: 'absolute',
     width: '100%',
@@ -260,9 +220,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
-
-
-  // Nav bar pill
   pill: {
     flex: 1,
     borderRadius: 32,
@@ -295,9 +252,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-
-  // Inline add button
   inlineAddBtn: {
     width: ADD_BTN_SIZE,
     height: ADD_BTN_SIZE,
@@ -312,9 +266,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 6,
   },
-
-
-  // Network status banner
   bannerWrapper: {
     position: 'absolute',
     alignSelf: 'center',
@@ -341,5 +292,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
 });

@@ -470,3 +470,6 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
     </View>
   );
 };
+
+
+export default ModalItemDetails;

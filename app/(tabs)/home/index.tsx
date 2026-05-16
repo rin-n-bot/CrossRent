@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDrawer } from '../../../context/DrawerContext';
 import { auth, db } from '../../../firebase';
-import { ModalItemDetails } from '../../modal/ModalItemDetails';
+import { ModalItemDetails } from '../../modal/index';
 import { styles } from './styles';
 
 import { CategoryList } from './components/CategoryList';

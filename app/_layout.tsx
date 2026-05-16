@@ -8,6 +8,11 @@ import { AuthProvider, useAuth } from '../context/AuthContext';
 import { DrawerProvider } from '../context/DrawerContext';
 import { db } from '../firebase';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 function RootLayoutContent() {
   const { user, loading } = useAuth();
@@ -73,11 +78,11 @@ function RootLayoutContent() {
         <Stack screenOptions={{ headerShown: false, contentStyle: { flex: 1 } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(auth)" />
-          <Stack.Screen name="add" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="profile" />
-          <Stack.Screen name="my-listing" />
-          <Stack.Screen name="message" />
-          <Stack.Screen name="modal" />
+          <Stack.Screen name="add-listing/index" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="profile/index" />
+          <Stack.Screen name="my-listing/index" />
+          <Stack.Screen name="message/index" />
+          <Stack.Screen name="modal/index" />
         </Stack>
       </View>
     </DrawerProvider>
@@ -85,10 +90,20 @@ function RootLayoutContent() {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    ...Ionicons.font,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync();
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
+
   return (
     <AuthProvider>
       <SafeAreaProvider>
-        <StatusBar style="auto" translucent={false} /> 
+        <StatusBar style="auto" translucent={false} />
         <RootLayoutContent />
       </SafeAreaProvider>
     </AuthProvider>
