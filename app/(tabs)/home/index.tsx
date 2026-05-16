@@ -22,6 +22,7 @@ import { SearchBar } from './components/SearchBar';
 import { TopNav } from './components/TopNav';
 
 
+// UI and logic constants
 const ALL_CATEGORY_ID = 'All';
 const REFRESH_DURATION = 1500;
 const LOAD_SIMULATION = 800;
@@ -32,18 +33,15 @@ const LIGHT_GRAY = '#F5F5F5';
 // Main Home Screen component
 export default function HomeScreen() {
 
-
   // Drawer state management and user authentication state
   const { toggleDrawer, isDrawerOpen } = useDrawer();
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
-
 
   // Sync auth state on component mount
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((user) => setCurrentUser(user));
     return unsub;
   }, []);
-
 
   // Local state for categories, listings, search query, loading states, and user profile info
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_ID);
@@ -56,7 +54,6 @@ export default function HomeScreen() {
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [userEmail, setUserEmail] = useState<string>('');
 
-
   // Utility function to format category IDs into user-friendly display names
   const formatCategoryName = (id: string) => {
     if (id === ALL_CATEGORY_ID) return ALL_CATEGORY_ID;
@@ -66,8 +63,7 @@ export default function HomeScreen() {
       .join(' ');
   };
 
-
-  // Filtering logic for listings based on active category and search query, handles various matching scenarios for category and search terms
+  // Filtering logic for listings based on active category and search query
   const getFilteredListings = () => {
     return listings.filter((item) => {
       const itemCatId = (item.categoryId || '').toLowerCase().trim();
@@ -90,7 +86,6 @@ export default function HomeScreen() {
     });
   };
 
-
   // Sync user profile
   useEffect(() => {
     if (!currentUser) return;
@@ -102,7 +97,6 @@ export default function HomeScreen() {
     );
     return unsubProfile;
   }, [currentUser?.uid]);
-
 
   // Sync categories
   useEffect(() => {
@@ -124,7 +118,6 @@ export default function HomeScreen() {
     );
     return unsubCats;
   }, [currentUser]);
-
 
   // Sync listings
   useEffect(() => {
@@ -163,7 +156,6 @@ export default function HomeScreen() {
     };
   }, [currentUser]);
 
-
   // Handler for category selection changes, simulates loading state
   const handleCategoryChange = (categoryId: string) => {
     if (categoryId === activeCategory) return;
@@ -172,17 +164,14 @@ export default function HomeScreen() {
     setTimeout(() => setIsLoading(false), LOAD_SIMULATION);
   };
 
-
   // Pull-to-refresh handler, simulates a refresh action with a timeout
   const onRefresh = () => {
     setIsRefreshing(true);
     setTimeout(() => setIsRefreshing(false), REFRESH_DURATION);
   };
 
-
   // Compute filtered listings based on current active category and search query
   const filteredListings = getFilteredListings();
-
 
   // Dynamic section label based on search query and active category
   const listingsSectionLabel =
@@ -191,7 +180,6 @@ export default function HomeScreen() {
       : activeCategory === ALL_CATEGORY_ID
       ? 'All Items'
       : formatCategoryName(activeCategory);
-
 
   // Determine status bar style based on drawer and item selection state
   return (
@@ -247,5 +235,4 @@ export default function HomeScreen() {
       </SafeAreaView>
     </View>
   );
-  
 }

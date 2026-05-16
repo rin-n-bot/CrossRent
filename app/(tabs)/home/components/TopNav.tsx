@@ -24,7 +24,6 @@ const LIGHT_GRAY = '#F5F5F5';
 export function TopNav({ avatarUrl, userEmail, onMenuPress }: TopNavProps) {
   const router = useRouter();
 
-
   // Logic for handling profile navigation
   return (
     <View style={[styles.topNav, { backgroundColor: LIGHT_GRAY }]}>
@@ -60,5 +59,4 @@ export function TopNav({ avatarUrl, userEmail, onMenuPress }: TopNavProps) {
 
     </View>
   );
-  
 }

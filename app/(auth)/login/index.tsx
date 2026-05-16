@@ -1,9 +1,7 @@
-import { useRouter } from 'expo-router';
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
+  Animated,
+  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -12,222 +10,146 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  Dimensions,
 } from 'react-native';
-import { auth, db } from '../../../firebase';
-import { InputField } from './components/InputField';
-import { styles } from './styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useLoginForm } from '../../hooks/useLoginForm';
+import { useSplashAnimation } from '../../hooks/useSplashAnimation';
+import { InputField } from './components/InputField';
+import { SplashAnimation } from './components/SplashAnimation';
+import { styles } from './styles';
 
-// Login main screen component
+const { height } = Dimensions.get('window');
+const scaleH = (size: number) => (height / 844) * size;
+
 export default function LoginScreen() {
+  const form   = useLoginForm();
+  const splash = useSplashAnimation();
 
-
-  // Constant state
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showpassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-  const { height } = Dimensions.get('window');
-  
-  const scaleH = (size: number) => (height / 844) * size;
 
-  const router = useRouter();
+  // Ref to the real logo — measure() gives screen-absolute pageX/pageY
+  const realLogoRef = useRef<Text>(null);
 
-
-  // Listener
   useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
-    const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
+    const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
   }, []);
 
-
-  //Validates if the email belongs to the HCDC domain and password meets criteria
-  const validateInputs = () => {
-    if (!email.endsWith('@hcdc.edu.ph')) {
-      Alert.alert('Validation Error', 'Only HCDC email is allowed');
-      return false;
-    }
-    if (password.length < 6) {
-      Alert.alert('Validation Error', 'Password must be at least 6 characters');
-      return false;
-    }
-    if (!isLogin && password !== confirmPassword) {
-      Alert.alert('Validation Error', 'Passwords do not match');
-      return false;
-    }
-    return true;
+  // Called once the real logo is laid out — passes screen-absolute coords as target
+  const onRealLogoLayout = () => {
+    setTimeout(() => {
+      realLogoRef.current?.measure((_x, _y, w, h, pageX, pageY) => {
+        splash.setTargetLayout({ x: pageX, y: pageY, w, h });
+      });
+    }, 50);
   };
 
+  const containerPadding = keyboardVisible && !form.isLogin
+    ? { paddingTop: scaleH(40) }
+    : { paddingTop: scaleH(140) };
 
-  // Firestore logic
-  const updateUserProfile = async (uid: string, emailStr: string | null, isNewUser: boolean) => {
-    const userRef = doc(db, 'users', uid);
-    const data = isNewUser 
-      ? { uid, email: emailStr, createdAt: serverTimestamp() } 
-      : { uid, email: emailStr, lastLogin: serverTimestamp() };
-    
-    await setDoc(userRef, data, { merge: true });
-  };
-
-
-  // Authentication  
-  const performLogin = async () => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    
-    if (!userCredential.user.emailVerified) {
-      Alert.alert('Verification Required', 'Please verify your HCDC email first!');
-      return;
-    }
-
-    await updateUserProfile(userCredential.user.uid, userCredential.user.email, false);
-    router.replace('/(tabs)/home');
-  };
-
-
-  // Handler for registration flow and triggers verification email
-  const performSignup = async () => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await updateUserProfile(userCredential.user.uid, userCredential.user.email, true);
-    await sendEmailVerification(userCredential.user);
-    Alert.alert('Success', 'Verification email sent! Check your HCDC email.');
-  };
-  
-
-  // Manage authentication process
-  const handleAuth = async () => {
-    if (!validateInputs()) return;
-
-    try {
-      if (isLogin) {
-        await performLogin();
-      } else {
-        await performSignup();
-      }
-      resetForm();
-    } catch (error: any) {
-      Alert.alert('Authentication Error', error.message);
-    }
-  };
-
-
-  // Clears all input fields
-  const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-  };
-
-
-  //Renderer logo and header text based on auth state
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <Text style={[styles.logo, { marginBottom: 10 }]}>
-        Cross<Text style={{ color: '#AF0B01' }}>Rent</Text>
-      </Text>
-      <Text style={styles.heroHeader}>
-        {isLogin ? 'Welcome Back' : 'Get Started'}
-      </Text>
-      <Text style={[styles.quote, { marginTop: 10 }]}>
-        Exclusive for Holy Cross of Davao College users.
-      </Text>
-    </View>
-  );
-
-
-  // Returns dynamic padding based on keyboard and auth state
-  const getContainerPadding = () => {
-  const basePadding = scaleH(140);
-  const keyboardPadding = scaleH(40);
-  return keyboardVisible && !isLogin? { paddingTop: keyboardPadding }: { paddingTop: basePadding };
-  };
-
-  
-  // Main Render
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined} 
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={[styles.inner, getContainerPadding()]}>
-            
-            {renderHeader()}
+          <Animated.View style={[styles.inner, containerPadding, { opacity: splash.contentOpacity }]}>
+
+            <View style={styles.header}>
+
+              {/* Real logo — hidden under splash overlay during animation.
+                  Revealed naturally as contentOpacity fades in.
+                  Screen-absolute position measured and sent to splash as landing target. */}
+              <Text
+                ref={realLogoRef}
+                onLayout={onRealLogoLayout}
+                style={[styles.logo, { marginBottom: 10 }]}
+              >
+                Cross<Text style={{ color: '#AF0B01' }}>Rent</Text>
+              </Text>
+
+              <Text style={styles.heroHeader}>
+                {form.isLogin ? 'Welcome Back' : 'Get Started'}
+              </Text>
+              <Text style={[styles.quote, { marginTop: 10 }]}>
+                Exclusive for Holy Cross of Davao College users.
+              </Text>
+            </View>
 
             <View style={{ marginBottom: 70 }} />
 
             <View style={styles.form}>
-              <InputField 
+              <InputField
                 label="EMAIL ADDRESS"
                 placeholder="name@hcdc.edu.ph"
-                value={email}
-                onChangeText={setEmail}
+                value={form.email}
+                onChangeText={form.setEmail}
               />
-
-              <InputField 
+              <InputField
                 label="PASSWORD"
                 placeholder="••••••••"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showpassword}
+                value={form.password}
+                onChangeText={form.setPassword}
+                secureTextEntry={!form.showPassword}
                 showPasswordToggle
-                isPasswordVisible={showpassword}
-                onToggleVisibility={() => setShowPassword(!showpassword)}
+                isPasswordVisible={form.showPassword}
+                onToggleVisibility={form.togglePasswordVisibility}
               />
-
-              {!isLogin && (
-                <InputField 
+              {!form.isLogin && (
+                <InputField
                   label="CONFIRM PASSWORD"
                   placeholder="••••••••"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showConfirmPassword}
+                  value={form.confirmPassword}
+                  onChangeText={form.setConfirmPassword}
+                  secureTextEntry={!form.showConfirmPassword}
                   showPasswordToggle
-                  isPasswordVisible={showConfirmPassword}
-                  onToggleVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
+                  isPasswordVisible={form.showConfirmPassword}
+                  onToggleVisibility={form.toggleConfirmPasswordVisibility}
                 />
               )}
 
-              <TouchableOpacity style={styles.mainActionBtn} onPress={handleAuth}>
+              <TouchableOpacity style={styles.mainActionBtn} onPress={form.handleSubmit}>
                 <Text style={styles.mainActionText}>
-                  {isLogin ? 'Sign In' : 'Create Account'}
+                  {form.isLogin ? 'Sign In' : 'Create Account'}
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.forgotBtn}
-                onPress={() => setIsLogin(!isLogin)}
-              >
-
+              <TouchableOpacity style={styles.forgotBtn} onPress={form.toggleMode}>
                 <Text style={styles.forgotText}>
-                  {isLogin
+                  {form.isLogin
                     ? "Don't have an account? Sign up here."
                     : "Already have an account? Sign in here."}
                 </Text>
-
               </TouchableOpacity>
 
               <View style={styles.footerLogoContainer}>
-                <Image 
-                  source={require('../../../assets/hcdc_logo.png')} 
+                <Image
+                  source={require('../../../assets/hcdc_logo.png')}
                   style={styles.footerLogo}
                 />
               </View>
-
             </View>
 
-          </View>
+          </Animated.View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+
+      {/* Splash — both logo coords are screen-absolute so delta is exact on any device */}
+      <SplashAnimation
+        logoX={splash.logoX}
+        logoY={splash.logoY}
+        spinnerOpacity={splash.spinnerOpacity}
+        bgOpacity={splash.bgOpacity}
+        spin={splash.spin}
+        onLogoLayout={splash.setSplashLogoLayout}
+        visible={splash.phase !== 'done'}
+      />
+
     </SafeAreaView>
   );
 }

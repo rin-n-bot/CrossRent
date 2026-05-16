@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+
 //  Constants Layout
 const NAV_HEIGHT = 62;
 const NAV_BOTTOM_OFFSET = 12;
@@ -17,7 +18,8 @@ const LABEL_SIZE = 11;
 const BANNER_APPEAR_DELAY = 1500;
 const BANNER_ONLINE_DURATION = 3000;
 
-//  Colors
+
+//  Colors for consistency
 const COLORS = {
   active: '#AF0B01',
   inactive: '#cfd4da',
@@ -28,6 +30,7 @@ const COLORS = {
   bannerClose: 'rgba(255,255,255,0.2)',
 };
 
+
 //  Route Config 
 const ROUTES: Record<string, { icon: string; label: string }> = {
   home: { icon: 'home', label: 'Home' },
@@ -35,8 +38,12 @@ const ROUTES: Record<string, { icon: string; label: string }> = {
   transactions: { icon: 'swap-horizontal', label: 'Transact' },
 };
 
+
 //  Root Layout 
 export default function TabsLayout() {
+
+
+  // Authentication check
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -57,15 +64,16 @@ export default function TabsLayout() {
       <Tabs.Screen name="home/index" options={{ title: 'Home' }} />
       <Tabs.Screen name="chat/index" options={{ title: 'Chats' }} />
       <Tabs.Screen name="transactions/index" options={{ title: 'Transactions' }} />
-      <Tabs.Screen name="profile/index" options={{ title: 'Profile' }} />
     </Tabs>
   );
 }
+
 
 //  Tab Item 
 function TabItem({ route, isFocused, onPress }: any) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Animate scale on focus change
   useEffect(() => {
     Animated.spring(scaleAnim, {
       toValue: isFocused ? 1.05 : 1,
@@ -74,10 +82,12 @@ function TabItem({ route, isFocused, onPress }: any) {
     }).start();
   }, [isFocused]);
 
+  // Determine icon and label based on route name
   const routeKey = Object.keys(ROUTES).find((key) => route.name.includes(key));
   const { icon, label } = routeKey ? ROUTES[routeKey] : { icon: 'help-outline', label: route.name };
   const color = isFocused ? COLORS.active : COLORS.inactive;
 
+  // Render the tab item with animated scaling and appropriate icon/label
   return (
     <TouchableOpacity onPress={onPress} style={styles.navItem} activeOpacity={0.7}>
       <Animated.View style={{ transform: [{ scale: scaleAnim }], alignItems: 'center' }}>
@@ -94,6 +104,7 @@ function TabItem({ route, isFocused, onPress }: any) {
   );
 }
 
+
 //  Network Banner 
 function NetworkBanner() {
   const [status, setStatus] = useState<'offline' | 'reconnecting' | 'online' | 'hidden'>('hidden');
@@ -103,12 +114,14 @@ function NetworkBanner() {
   const isFirstMount = useRef(true);
   const insets = useSafeAreaInsets();
 
+  // Animation sequence for showing/hiding the banner
   const animate = (visible: boolean) =>
     Animated.parallel([
       Animated.spring(translateY, { toValue: visible ? 0 : 20, friction: 6, useNativeDriver: true }),
       Animated.timing(opacity, { toValue: visible ? 1 : 0, duration: 200, useNativeDriver: true }),
     ]);
 
+  // Show banner with appropriate status and auto-hide if coming online
   const showBanner = (newStatus: 'offline' | 'online') => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
     setStatus(newStatus);
@@ -122,6 +135,7 @@ function NetworkBanner() {
     animate(false).start(() => setStatus('hidden'));
   };
 
+  // Network status listener setup on mount
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       const isConnected = state.isConnected && state.isInternetReachable;
@@ -149,15 +163,18 @@ function NetworkBanner() {
 
   if (status === 'hidden') return null;
 
+  // Derived states for cleaner conditional rendering
   const isOffline = status === 'offline';
   const isOnline = status === 'online';
   const isReconnecting = status === 'reconnecting';
   const safeBottom = Math.min(insets.bottom, 24);
   const bannerBottom = NAV_HEIGHT + safeBottom + NAV_BOTTOM_OFFSET;
 
+  // Render the animated banner with dynamic content based on network status
   return (
     <Animated.View style={[styles.bannerWrapper, { bottom: bannerBottom, opacity, transform: [{ translateY }] }]}>
       <View style={[styles.banner, { backgroundColor: isOnline ? COLORS.online : COLORS.navBg }]}>
+
         <Ionicons
           name={isOffline ? 'cloud-offline-outline' : 'wifi-outline'}
           size={15}
@@ -179,22 +196,24 @@ function NetworkBanner() {
         {isReconnecting && (
           <ActivityIndicator size="small" color={COLORS.white} style={{ width: 18, height: 18 }} />
         )}
+
       </View>
     </Animated.View>
   );
 }
+
 
 //  Capsule Nav Bar
 function CapsuleNav({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const safeBottom = Math.min(insets.bottom, 24);
 
-  const visibleRoutes = state.routes.filter(
-    (route: any) => route.name !== 'profile/index'
-  );
+  const visibleRoutes = state.routes;
 
+  //  Router instance for navigation
   return (
     <View style={[styles.container, { bottom: safeBottom + NAV_BOTTOM_OFFSET }]}>
+      
       <NetworkBanner />
 
       <View style={styles.pill}>
@@ -224,9 +243,11 @@ function CapsuleNav({ state, navigation }: any) {
           <Ionicons name="add" size={28} color={COLORS.white} />
         </TouchableOpacity>
       </View>
+
     </View>
   );
 }
+
 
 //  Styles 
 const styles = StyleSheet.create({
@@ -240,6 +261,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
 
+
+  // Nav bar pill
   pill: {
     flex: 1,
     borderRadius: 32,
@@ -248,35 +271,33 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
-    elevation: 30,
+    elevation: 8,
   },
-
   capsule: {
     flexDirection: 'row',
     height: NAV_HEIGHT,
     alignItems: 'center',
     borderRadius: 32,
   },
-
   navItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    height: NAV_HEIGHT,  // ← fixed: was '100%'
+    height: NAV_HEIGHT,
   },
-
   navLabel: {
     fontSize: LABEL_SIZE,
     fontWeight: '700',
     marginTop: 3,
     textAlign: 'center',
   },
-
   addWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
   },
 
+
+  // Inline add button
   inlineAddBtn: {
     width: ADD_BTN_SIZE,
     height: ADD_BTN_SIZE,
@@ -285,19 +306,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
-    elevation: 10,
+    elevation: 8,
     shadowColor: COLORS.addBtn,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
   },
 
+
+  // Network status banner
   bannerWrapper: {
     position: 'absolute',
     alignSelf: 'center',
     zIndex: 999,
   },
-
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -306,13 +328,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
   },
-
   bannerText: {
     color: '#fff',
     fontSize: 13,
     fontWeight: '600',
   },
-
   bannerClose: {
     width: 18,
     height: 18,
@@ -321,4 +341,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
 });

@@ -3,6 +3,8 @@ import React from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { styles } from '../styles';
 
+
+// Type definitions for the InputField component props
 interface InputFieldProps {
   label: string;
   placeholder: string;
@@ -64,6 +66,8 @@ export const InputField = ({
     />
   );
 
+
+  // Main render function for the input field component
   return (
     <View style={styles.inputBox}>
       

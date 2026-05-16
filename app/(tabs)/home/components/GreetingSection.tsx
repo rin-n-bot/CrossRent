@@ -18,7 +18,6 @@ export function GreetingSection() {
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [showFullMeaning, setShowFullMeaning] = useState(false);
 
-
   // Animation refs for quote fading and arrow rotation
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const arrowRotate = useRef(new Animated.Value(0)).current;
@@ -41,7 +40,6 @@ export function GreetingSection() {
     return () => clearInterval(timer);
   }, [fadeAnim]);
 
-  
   // Toggle function for showing full meaning of HCDC
   const toggleFullMeaning = () => {
     const toValue = showFullMeaning ? 0 : 1;
@@ -53,18 +51,15 @@ export function GreetingSection() {
     setShowFullMeaning((prev) => !prev);
   };
 
-
   // Arrow rotation animation interpolation
   const arrowRotation = arrowRotate.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '180deg'],
   });
 
-
   // Main render
   return (
     <View style={styles.greetingContainer}>
-
       <TouchableOpacity
         onPress={toggleFullMeaning}
         activeOpacity={0.7}
@@ -84,16 +79,13 @@ export function GreetingSection() {
         </Animated.View>
 
       </TouchableOpacity>
-
+      
       <Animated.Text
         style={[styles.greetingText, { opacity: fadeAnim, letterSpacing: -1 }]}
       >
-        
         {GREETING_QUOTES[quoteIndex]}
-
       </Animated.Text>
 
     </View>
   );
-  
 }
