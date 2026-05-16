@@ -32,7 +32,7 @@ export function DrawerMenu() {
            try {
              await logout();
              toggleDrawer(false);
-             router.replace('/(auth)/LoginScreen');
+             router.replace('/(auth)/login');
            } catch (error) {
              Alert.alert('Error', 'Failed to logout');
            }

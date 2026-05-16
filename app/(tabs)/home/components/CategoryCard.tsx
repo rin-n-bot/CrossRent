@@ -12,7 +12,7 @@ interface CategoryCardProps {
 }
 
 
-// Set visual constants
+// Visual constants
 const ACTIVE_COLOR = "#FFFFFF";
 const INACTIVE_COLOR = "#222D31";
 const ICON_SIZE = 18;
@@ -44,13 +44,14 @@ export const CategoryCard = ({ cat, isActive, onPress }: CategoryCardProps) => {
   const getContentColor = () => (isActive ? ACTIVE_COLOR : INACTIVE_COLOR);
 
   
-  // Main interactive card UI
+  // Main render
   return (
     <TouchableOpacity
       onPress={onPress}
       style={getContainerStyle()}
       activeOpacity={TOUCH_OPACITY}
     >
+      
       {/* Category Icon */}
       <Ionicons 
         name={cat.icon as any} 
@@ -68,6 +69,8 @@ export const CategoryCard = ({ cat, isActive, onPress }: CategoryCardProps) => {
       >
         {cat.name}
       </Text>
+
     </TouchableOpacity>
   );
+
 };

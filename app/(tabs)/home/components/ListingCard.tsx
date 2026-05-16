@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { styles } from '../styles';
 
 
-// Component prop specifications
+// Type definitions for component props
 interface ListingCardProps {
   item: any;
   onPress: () => void;
@@ -23,7 +23,7 @@ const RENTAL_PERIOD_FONT_SIZE = 12;
 export const ListingCard = ({ item, onPress }: ListingCardProps) => {
 
 
-  // Logic for the availability status badge
+  // Renders the status badge with dynamic styling based on availability
   const renderStatusBadge = () => {
     const isAvailable = item.status === STATUS_AVAILABLE;
     const backgroundColor = isAvailable ? COLOR_SUCCESS_BG : COLOR_ERROR_BG;
@@ -39,7 +39,7 @@ export const ListingCard = ({ item, onPress }: ListingCardProps) => {
   };
 
 
-  // Logic for the price and rental duration text
+  // Pricing information rendering logic, handles both price and optional rental period
   const renderPriceInfo = () => (
     <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
       <Text style={styles.cardPricePlain}>
@@ -60,13 +60,14 @@ export const ListingCard = ({ item, onPress }: ListingCardProps) => {
   );
 
   
-  // Main interactive listing card UI
+  // Main render
   return (
     <TouchableOpacity 
       style={styles.card} 
       activeOpacity={TOUCH_OPACITY} 
       onPress={onPress}
     >
+
       {/* Visual media section */}
       <View style={styles.imageContainer}>
         <Image 
@@ -78,6 +79,7 @@ export const ListingCard = ({ item, onPress }: ListingCardProps) => {
 
       {/* Item details section */}
       <View style={styles.cardContent}>
+
         {/* Category and Status row */}
         <View style={styles.cardHeader}>
           <Text style={styles.cardCategory}>
@@ -93,7 +95,10 @@ export const ListingCard = ({ item, onPress }: ListingCardProps) => {
         
         {/* Pricing details */}
         {renderPriceInfo()}
+
       </View>
+
     </TouchableOpacity>
   );
+
 };

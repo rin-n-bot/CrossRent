@@ -13,7 +13,7 @@ export default function Page() {
       if (user) {
         router.replace('/(tabs)/home');
       } else {
-        router.replace('/(auth)/LoginScreen');
+        router.replace('/(auth)/login');
       }
     }
   }, [user, loading, router]);

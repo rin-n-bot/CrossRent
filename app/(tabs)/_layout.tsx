@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-//  Constants 
+//  Constants Layout
 const NAV_HEIGHT = 62;
 const NAV_BOTTOM_OFFSET = 12;
 const ADD_BTN_SIZE = 58;
@@ -17,10 +17,11 @@ const LABEL_SIZE = 11;
 const BANNER_APPEAR_DELAY = 1500;
 const BANNER_ONLINE_DURATION = 3000;
 
+//  Colors
 const COLORS = {
   active: '#AF0B01',
   inactive: '#cfd4da',
-  navBg: '#ffffff',
+  navBg: '#222D31',
   addBtn: '#AF0B01',
   online: '#1D9E75',
   white: '#fff',
@@ -46,12 +47,12 @@ export default function TabsLayout() {
     );
   }
 
-  if (!user) return <Redirect href="/(auth)/LoginScreen" />;
+  if (!user) return <Redirect href="/(auth)/login" />;
 
   return (
     <Tabs
       screenOptions={{ headerShown: false, animation: 'fade' }}
-      tabBar={(props) => <GlassCapsuleNav {...props} />}
+      tabBar={(props) => <CapsuleNav {...props} />}
     >
       <Tabs.Screen name="home/index" options={{ title: 'Home' }} />
       <Tabs.Screen name="chat/index" options={{ title: 'Chats' }} />
@@ -183,8 +184,8 @@ function NetworkBanner() {
   );
 }
 
-//  Glass Capsule Nav Bar
-function GlassCapsuleNav({ state, navigation }: any) {
+//  Capsule Nav Bar
+function CapsuleNav({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const safeBottom = Math.min(insets.bottom, 24);
 
@@ -242,12 +243,12 @@ const styles = StyleSheet.create({
   pill: {
     flex: 1,
     borderRadius: 32,
-    backgroundColor: COLORS.navBg,
+    backgroundColor: '#ffffff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
-    elevation: 40,
+    elevation: 30,
   },
 
   capsule: {
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
-    elevation: 4,
+    elevation: 10,
     shadowColor: COLORS.addBtn,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.4,

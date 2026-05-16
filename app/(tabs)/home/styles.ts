@@ -1,19 +1,15 @@
-import { StyleSheet, Dimensions, Platform, StatusBar } from 'react-native';
+import { Dimensions, Platform, StatusBar, StyleSheet } from 'react-native';
 
 
-// Get screen dimensions for responsive calculations
-const { width, height } = Dimensions.get('window');
+// Centralized styling and layout constants for the Home screen and its components
+const { width } = Dimensions.get('window');
 
-
-// Set base design constants
 const BASE_WIDTH = 375;
 const DRAWER_WIDTH_PERCENT = 0.75;
 const HORIZONTAL_PADDING_VAL = 20;
 const CATEGORIES_PER_ROW = 3;
 const LISTINGS_PER_ROW = 2;
 
-
-// Set color palette
 const COLORS = {
   background: '#F5F5F5',
   surface: '#FFFFFF',
@@ -33,77 +29,56 @@ const COLORS = {
 };
 
 
-// Calculate responsive sizes based on screen width
+// Utility function to scale sizes based on device width, using a base width for reference
 export const scale = (size: number) => (width / BASE_WIDTH) * size;
 
-
-// Set derived layout measurements
 export const HORIZONTAL_PADDING = scale(HORIZONTAL_PADDING_VAL);
 export const DRAWER_WIDTH = width * DRAWER_WIDTH_PERCENT;
 const GRID_GAP = scale(12);
 const CATEGORY_GAP = scale(20);
 
+export const CARD_WIDTH = (width - HORIZONTAL_PADDING * 2 - GRID_GAP) / LISTINGS_PER_ROW;
+const CATEGORY_CARD_WIDTH = (width - HORIZONTAL_PADDING * 2 - CATEGORY_GAP) / CATEGORIES_PER_ROW;
 
-// Calculate dynamic widths for grid items
-export const CARD_WIDTH = (width - (HORIZONTAL_PADDING * 2) - GRID_GAP) / LISTINGS_PER_ROW;
-const CATEGORY_CARD_WIDTH = (width - (HORIZONTAL_PADDING * 2) - CATEGORY_GAP) / CATEGORIES_PER_ROW;
-
-
-// Shared visual properties for consistency
-const SHADOW_LIGHT = {
-  shadowColor: COLORS.shadow,
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.08,
-  shadowRadius: 2,
-  elevation: 1,
-};
 
 const ROW_CENTER = {
   flexDirection: 'row' as const,
   alignItems: 'center' as const,
 };
 
+
+// Exported styles
 export const styles = StyleSheet.create({
 
-
-  // Main layout container
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-
-  // Vertical visual separator
   divider: {
     height: 1,
     backgroundColor: COLORS.border,
     marginBottom: scale(20),
   },
 
-
-  // Main scrollable area padding
-  scrollContent: { 
-    paddingBottom: scale(100) 
+  scrollContent: {
+    paddingBottom: scale(100),
   },
 
-
-  // Dark overlay when drawer is open
   backdrop: {
     position: 'absolute',
-    top: 0, 
-    left: 0, 
-    right: 0, 
+    top: 0,
+    left: 0,
+    right: 0,
     bottom: 0,
     backgroundColor: COLORS.backdrop,
     zIndex: 998,
   },
 
-
-  // Side navigation menu
   drawer: {
     position: 'absolute',
-    left: 0, 
-    top: 0, 
+    left: 0,
+    top: 0,
     bottom: 0,
     width: DRAWER_WIDTH,
     backgroundColor: COLORS.dark,
@@ -112,8 +87,6 @@ export const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 20,
   },
 
-
-  // Top part of the drawer with logo/close
   drawerHeader: {
     ...ROW_CENTER,
     justifyContent: 'space-between',
@@ -123,21 +96,15 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.drawerBorder,
   },
 
-
-  // List container for drawer links
-  drawerItems: { 
-    padding: 20 
+  drawerItems: {
+    padding: 20,
   },
 
-
-  // Individual navigation link row
   drawerItem: {
     ...ROW_CENTER,
     marginBottom: 25,
   },
 
-
-  // Label for drawer navigation links
   drawerItemText: {
     marginLeft: 15,
     fontSize: 16,
@@ -145,8 +112,6 @@ export const styles = StyleSheet.create({
     color: COLORS.surface,
   },
 
-
-  // Top navigation bar on Home
   topNav: {
     ...ROW_CENTER,
     justifyContent: 'space-between',
@@ -155,8 +120,6 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-
-  // Brand identity text
   logoMini: {
     fontSize: scale(24),
     fontWeight: '700',
@@ -164,8 +127,6 @@ export const styles = StyleSheet.create({
     letterSpacing: -1,
   },
 
-
-  // User profile image wrapper
   profileCircle: {
     width: scale(32),
     height: scale(32),
@@ -175,24 +136,35 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  // Fallback avatar background when no profile photo
+  profileFallback: {
+    width: '100%',
+    height: '100%',
+    borderRadius: scale(16),
+    backgroundColor: '#222D31',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-  // Header section for greetings
+  // Initial letter shown when no profile photo
+  profileFallbackText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: scale(12),
+  },
+
   greetingContainer: {
     paddingHorizontal: HORIZONTAL_PADDING,
     paddingTop: scale(10),
     paddingBottom: scale(15),
   },
 
-
-  // Interactive toggle for school name
   hcdcToggle: {
     ...ROW_CENTER,
     marginBottom: scale(8),
     alignSelf: 'flex-start',
   },
 
-
-  // Short/Full school name text
   hcdcText: {
     fontSize: scale(14),
     fontWeight: '700',
@@ -201,8 +173,6 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-
-  // Large bold greeting headline
   greetingText: {
     fontSize: scale(24),
     fontWeight: '700',
@@ -211,15 +181,11 @@ export const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
 
-
-  // Container for search input
   searchSection: {
     paddingHorizontal: HORIZONTAL_PADDING,
     marginBottom: scale(20),
   },
 
-
-  // Stylized search input box
   searchBar: {
     ...ROW_CENTER,
     height: scale(55),
@@ -230,16 +196,12 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.borderLight,
   },
 
-
-  // Text entry for search
   searchInput: {
     flex: 1,
     fontSize: scale(15),
     color: COLORS.textInput,
   },
 
-
-  // Subheader for sections like Categories
   sectionLabel: {
     paddingHorizontal: HORIZONTAL_PADDING,
     fontSize: scale(15),
@@ -249,8 +211,6 @@ export const styles = StyleSheet.create({
     marginBottom: scale(12),
   },
 
-
-  // Flex container for category items
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -259,8 +219,6 @@ export const styles = StyleSheet.create({
     marginBottom: scale(5),
   },
 
-
-  // Small box for individual categories
   categoryCard: {
     width: CATEGORY_CARD_WIDTH,
     backgroundColor: COLORS.surface,
@@ -272,15 +230,11 @@ export const styles = StyleSheet.create({
     marginBottom: scale(10),
   },
 
-
-  // Highlighted state for category card
   activeCategoryCard: {
     backgroundColor: COLORS.dark,
     borderColor: COLORS.dark,
   },
 
-
-  // Category name text
   categoryCardText: {
     marginTop: scale(8),
     fontSize: scale(11),
@@ -288,14 +242,10 @@ export const styles = StyleSheet.create({
     color: COLORS.dark,
   },
 
-
-  // Highlighted state for category text
   activeCategoryCardText: {
     color: COLORS.surface,
   },
 
-
-  // Layout for the main product grid
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -303,8 +253,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-
-  // Main product card wrapper
   card: {
     width: CARD_WIDTH,
     marginBottom: scale(15),
@@ -313,37 +261,27 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-
-  // Fixed ratio container for listing photos
   imageContainer: {
     width: '100%',
     aspectRatio: 1.1,
   },
 
-
-  // Actual listing photo
   cardImage: {
     width: '100%',
     height: '100%',
   },
 
-
-  // Padding area for text inside cards
   cardContent: {
     paddingHorizontal: scale(10),
     paddingVertical: scale(8),
   },
 
-
-  // Alignment for price and category in card
   cardHeader: {
     ...ROW_CENTER,
     justifyContent: 'space-between',
     marginBottom: scale(2),
   },
 
-
-  // Small brand-colored category tag
   cardCategory: {
     fontSize: scale(10),
     color: COLORS.primary,
@@ -351,8 +289,6 @@ export const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-
-  // Item name in listing grid
   cardTitle: {
     fontSize: scale(13),
     fontWeight: '600',
@@ -360,57 +296,42 @@ export const styles = StyleSheet.create({
     marginBottom: scale(4),
   },
 
-
-  // Bold price text on card
   cardPricePlain: {
     fontSize: scale(16),
     fontWeight: '700',
     color: COLORS.dark,
   },
 
-
-
-  // Visual background for item status
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 5,
   },
 
-
-  // Text inside the status badge
   statusTextPlain: {
     fontSize: scale(10),
     fontWeight: '700',
     textTransform: 'uppercase',
   },
 
-
-  // Loading indicator center wrapper
   loaderContainer: {
     height: scale(200),
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-
-  // Wrapper for "empty list" messages
   noResultsContainer: {
     width: '100%',
     paddingVertical: scale(40),
     alignItems: 'center',
   },
 
-
-  // Text for empty search results
   noResultsText: {
     fontSize: scale(14),
     color: COLORS.borderMedium,
     fontWeight: '600',
   },
 
-
-  // End of scroll indicator text
   endOfListText: {
     textAlign: 'center',
     color: COLORS.borderMedium,
@@ -420,15 +341,11 @@ export const styles = StyleSheet.create({
     marginBottom: scale(10),
   },
 
-
-  // Background for item detail modal
   modalContainer: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-
-  // Top bar for the detail view
   modalHeader: {
     ...ROW_CENTER,
     paddingHorizontal: HORIZONTAL_PADDING,
@@ -436,8 +353,6 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-
-  // Item title in the detail header
   modalHeaderTitle: {
     fontSize: scale(19),
     fontWeight: '700',
@@ -445,37 +360,27 @@ export const styles = StyleSheet.create({
     letterSpacing: -1,
   },
 
-
-  // Touch area for closing the modal
-  modalCloseBtn: { 
-    padding: scale(5) 
+  modalCloseBtn: {
+    padding: scale(5),
   },
 
-
-  // Hero image in details view
   modalImage: {
-    width: width,
+    width,
     aspectRatio: 4 / 3,
     resizeMode: 'contain',
     backgroundColor: '#F0F0F0',
   },
 
-
-  // Main text container in details view
-  modalInfoSection: { 
-    padding: HORIZONTAL_PADDING 
+  modalInfoSection: {
+    padding: HORIZONTAL_PADDING,
   },
 
-
-  // Horizontal layout for info bits in modal
   modalRow: {
     ...ROW_CENTER,
     justifyContent: 'space-between',
     marginBottom: scale(10),
   },
 
-
-  // Detail view category tag
   modalCategory: {
     fontSize: scale(12),
     fontWeight: '700',
@@ -483,8 +388,6 @@ export const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  
-  // Large title in details view
   modalTitle: {
     fontSize: scale(22),
     fontWeight: '600',
@@ -492,8 +395,6 @@ export const styles = StyleSheet.create({
     marginBottom: scale(5),
   },
 
-
-  // Large price in details view
   modalPrice: {
     fontSize: scale(20),
     fontWeight: '700',
@@ -501,8 +402,6 @@ export const styles = StyleSheet.create({
     marginBottom: scale(20),
   },
 
-
-  // Labels for description or specs
   detailLabel: {
     fontSize: scale(16),
     fontWeight: '500',
@@ -510,8 +409,6 @@ export const styles = StyleSheet.create({
     marginBottom: scale(8),
   },
 
-
-  // Detailed body text for item
   detailValue: {
     fontSize: scale(14),
     color: COLORS.textSecondary,
@@ -519,15 +416,11 @@ export const styles = StyleSheet.create({
     marginBottom: scale(20),
   },
 
-
-  // Horizontal row for owner info
   contactRow: {
     ...ROW_CENTER,
     marginBottom: scale(12),
   },
 
-
-  // Owner name or contact text
   detailValueContact: {
     fontSize: scale(15),
     fontWeight: '700',
@@ -535,8 +428,6 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
   },
 
-
-  // Persistent action bar at bottom of modal
   modalFooter: {
     position: 'absolute',
     bottom: 0,
@@ -549,8 +440,6 @@ export const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 30 : 20,
   },
 
-
-  // Primary action button in modal
   messageBtn: {
     flex: 1,
     height: scale(50),
@@ -560,16 +449,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-
-  // Label for action button
   messageBtnText: {
     color: COLORS.surface,
     fontSize: scale(15),
     fontWeight: '700',
   },
 
-
-  // Standardized info block with shadow
   infoCard: {
     backgroundColor: COLORS.surface,
     borderRadius: scale(12),
@@ -578,8 +463,6 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-
-  // Row inside an info card
   infoRow: {
     ...ROW_CENTER,
     paddingHorizontal: scale(15),
@@ -588,28 +471,20 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
 
-
-  // Last row cleanup to remove bottom border
   infoRowLast: {
     borderBottomWidth: 0,
   },
 
-
-  // Flexible container for label/value pair
   infoTextBlock: {
     flex: 1,
   },
 
-
-  // Subtle label within info cards
   infoRowLabel: {
     fontSize: scale(13),
     fontWeight: '700',
     color: COLORS.textMuted,
   },
 
-
-  // Bold value within info cards
   infoRowValue: {
     fontSize: scale(16),
     fontWeight: '600',
@@ -617,22 +492,18 @@ export const styles = StyleSheet.create({
     marginTop: scale(2),
   },
 
-
   chatActionBtn: {
-  width: scale(50),
-  height: scale(46),
-  borderRadius: scale(50),
-  backgroundColor: '#FFFFFF',
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderWidth: 1,
-  borderColor: '#E5E7EB',
-  marginRight: scale(10),
-  marginLeft: scale(5),
-},
+    width: scale(50),
+    height: scale(46),
+    borderRadius: scale(50),
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginRight: scale(10),
+    marginLeft: scale(5),
+  },
 
-chatActionIcon: {
-  //for future overrides styles
-},
-  
+  chatActionIcon: {},
 });

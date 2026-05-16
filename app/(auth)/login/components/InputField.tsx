@@ -51,7 +51,7 @@ export const InputField = ({
   );
 
 
-  // Renders a standard text input field
+  // Renders the standard text input field
   const renderStandardInput = () => (
     <TextInput 
       placeholder={placeholder} 
@@ -67,13 +67,14 @@ export const InputField = ({
   return (
     <View style={styles.inputBox}>
       
-      {/* FIELD LABEL */}
+      {/* field label */}
       <View style={styles.labelWrapper}>
         <Text style={styles.inputLabel}>{label}</Text>
       </View>
 
-      {/* INPUT CONTENT */}
+      {/* password input content */}
       {showPasswordToggle ? renderPasswordInput() : renderStandardInput()}
+      
     </View>
   );
 };

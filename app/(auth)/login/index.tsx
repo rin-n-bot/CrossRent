@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
@@ -11,7 +11,8 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
+  Dimensions,
 } from 'react-native';
 import { auth, db } from '../../../firebase';
 import { InputField } from './components/InputField';
@@ -19,9 +20,11 @@ import { styles } from './styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
+// Login main screen component
 export default function LoginScreen() {
 
-  // State
+
+  // Constant state
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,11 +32,14 @@ export default function LoginScreen() {
   const [showpassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const { height } = Dimensions.get('window');
+  
+  const scaleH = (size: number) => (height / 844) * size;
 
   const router = useRouter();
 
 
-  // Listens for keyboard visibility to adjust UI padding dynamically.
+  // Listener
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
     const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
@@ -44,7 +50,7 @@ export default function LoginScreen() {
   }, []);
 
 
-  //Validates if the email belongs to the HCDC domain and password meets criteria.
+  //Validates if the email belongs to the HCDC domain and password meets criteria
   const validateInputs = () => {
     if (!email.endsWith('@hcdc.edu.ph')) {
       Alert.alert('Validation Error', 'Only HCDC email is allowed');
@@ -62,7 +68,7 @@ export default function LoginScreen() {
   };
 
 
-  // Firestore Logic
+  // Firestore logic
   const updateUserProfile = async (uid: string, emailStr: string | null, isNewUser: boolean) => {
     const userRef = doc(db, 'users', uid);
     const data = isNewUser 
@@ -87,7 +93,7 @@ export default function LoginScreen() {
   };
 
 
-  // Handles the registration flow and triggers verification email.
+  // Handler for registration flow and triggers verification email
   const performSignup = async () => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     await updateUserProfile(userCredential.user.uid, userCredential.user.email, true);
@@ -96,7 +102,7 @@ export default function LoginScreen() {
   };
   
 
-  // Management for the authentication process.
+  // Manage authentication process
   const handleAuth = async () => {
     if (!validateInputs()) return;
 
@@ -113,7 +119,7 @@ export default function LoginScreen() {
   };
 
 
-  // Clears all input fields.
+  // Clears all input fields
   const resetForm = () => {
     setEmail('');
     setPassword('');
@@ -121,7 +127,7 @@ export default function LoginScreen() {
   };
 
 
-  //Renders the logo and header text based on auth state.
+  //Renderer logo and header text based on auth state
   const renderHeader = () => (
     <View style={styles.header}>
       <Text style={[styles.logo, { marginBottom: 10 }]}>
@@ -137,9 +143,11 @@ export default function LoginScreen() {
   );
 
 
-  // Returns dynamic padding based on keyboard and auth state.
+  // Returns dynamic padding based on keyboard and auth state
   const getContainerPadding = () => {
-    return keyboardVisible && !isLogin ? { paddingTop: 40 } : { paddingTop: 140 };
+  const basePadding = scaleH(140);
+  const keyboardPadding = scaleH(40);
+  return keyboardVisible && !isLogin? { paddingTop: keyboardPadding }: { paddingTop: basePadding };
   };
 
   
@@ -155,7 +163,6 @@ export default function LoginScreen() {
             
             {renderHeader()}
 
-            {/* Spacer preserving the vertical gap previously occupied by AuthToggle */}
             <View style={{ marginBottom: 70 }} />
 
             <View style={styles.form}>
@@ -200,11 +207,13 @@ export default function LoginScreen() {
                 style={styles.forgotBtn}
                 onPress={() => setIsLogin(!isLogin)}
               >
+
                 <Text style={styles.forgotText}>
                   {isLogin
                     ? "Don't have an account? Sign up here."
                     : "Already have an account? Sign in here."}
                 </Text>
+
               </TouchableOpacity>
 
               <View style={styles.footerLogoContainer}>
@@ -213,6 +222,7 @@ export default function LoginScreen() {
                   style={styles.footerLogo}
                 />
               </View>
+
             </View>
 
           </View>
