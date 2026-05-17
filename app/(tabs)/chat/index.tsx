@@ -288,7 +288,7 @@ export default function ChatScreen() {
   // Navigate to the conversation screen for a given chat
   const openChat = (chatId: string) => {
     router.push({
-      pathname: '../../message/convo',
+      pathname: '../../message',
       params: { chatId },
     });
   };

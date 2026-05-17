@@ -2,7 +2,7 @@ import { Redirect, Tabs, router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import NetInfo from '@react-native-community/netinfo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,6 +14,7 @@ const ICON_SIZE = 22;
 const LABEL_SIZE = 11;
 const BANNER_APPEAR_DELAY = 1500;
 const BANNER_ONLINE_DURATION = 3000;
+const TAB_ROUTE_NAMES = ['home/index', 'chat/index', 'transactions/index']; // ← ADD THIS
 
 const COLORS = {
   active: '#AF0B01',
@@ -67,8 +68,9 @@ function TabItem({ route, isFocused, onPress }: any) {
     }).start();
   }, [isFocused, scaleAnim]);
 
-  const routeKey = Object.keys(ROUTES).find((key) => route.name.includes(key));
-  const { icon, label } = routeKey ? ROUTES[routeKey] : { icon: 'help-outline', label: route.name };
+  // ← CHANGED
+  const routeKey = route.name.split('/')[0];
+  const { icon, label } = ROUTES[routeKey] ?? { icon: 'help-outline', label: route.name };
   const color = isFocused ? COLORS.active : COLORS.inactive;
 
   return (
@@ -176,7 +178,11 @@ function NetworkBanner() {
 function CapsuleNav({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const safeBottom = Math.min(insets.bottom, 24);
-  const visibleRoutes = state.routes;
+
+  // ← CHANGED
+  const visibleRoutes = state.routes.filter((route: any) =>
+    TAB_ROUTE_NAMES.includes(route.name)
+  );
 
   return (
     <View style={[styles.container, { bottom: safeBottom + NAV_BOTTOM_OFFSET }]}>

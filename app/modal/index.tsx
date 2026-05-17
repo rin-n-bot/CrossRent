@@ -239,7 +239,7 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
       }
 
       router.push({
-        pathname: '/message/convo',
+        pathname: ('/message'),
         params: { chatId },
       });
     } catch (error) {

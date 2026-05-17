@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useLoginForm } from '../../hooks/useLoginForm';
-import { useSplashAnimation } from '../../hooks/useSplashAnimation';
+import { useLoginForm } from '../../../hooks/useLoginForm';
+import { useSplashAnimation } from '../../../hooks/useSplashAnimation';
 import { InputField } from './components/InputField';
 import { SplashAnimation } from './components/SplashAnimation';
 import { styles } from './styles';

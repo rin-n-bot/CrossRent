@@ -1,9 +1,9 @@
+import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { auth, db } from '../../firebase';
+import { auth, db } from '../firebase';
 
 export const useLoginForm = () => {
   const [isLogin, setIsLogin]                         = useState(true);

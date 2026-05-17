@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { Animated, View, Dimensions, StyleSheet, Text } from 'react-native';
-import { Layout } from '../../../hooks/useSplashAnimation';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Layout } from '../../../../hooks/useSplashAnimation';
 
 const { width } = Dimensions.get('window');
 const scaleW = (size: number) => (width / 390) * size;

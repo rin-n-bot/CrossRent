@@ -4,7 +4,7 @@
     "slug": "crossrent",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "/assets/images/icon.png",
     "scheme": "crossrentapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -48,7 +48,15 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
