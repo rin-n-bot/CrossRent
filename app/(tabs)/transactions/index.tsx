@@ -1,3 +1,5 @@
+// app/(tabs)/transactions/index.tsx
+
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
@@ -39,14 +41,18 @@ interface Transaction {
   status: 'requested' | 'rented' | 'completed' | 'cancelled';
   itemDeleted?: boolean;
   createdAt?: Timestamp;
+  statusChangedAt?: Timestamp;
+  approvedAt?: Timestamp;
+  completedAt?: Timestamp;
+  cancelledAt?: Timestamp;
+  rentPeriod?: string;
+  rentPrice?: number | string;
   showToOwner?: boolean;
   showToRenter?: boolean;
 }
 
 type ViewMode = 'lending' | 'borrowing' | 'completed' | 'returned';
 
-
-// Standard colors and timing used throughout the screen
 const COLOR_PRIMARY_RED = '#AF0B01';
 const COLOR_BACKGROUND_LIGHT = '#F5F5F5';
 const COLOR_DARK_MODE = '#222D31';
@@ -64,19 +70,16 @@ export default function TransactionsScreen() {
   const [activeTabMode, setActiveTabMode] = useState<ViewMode>('lending');
   const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
   const [selectedTransactionIds, setSelectedTransactionIds] = useState<string[]>([]);
-  
+  const [expandedTransactionIds, setExpandedTransactionIds] = useState<string[]>([]);
+
   const fadeAnimationValue = useRef(new Animated.Value(1)).current;
 
-  
-  // Set the active tab based on incoming navigation parameters
   useEffect(() => {
     if (navigationParameters.initialTab) {
       setActiveTabMode(navigationParameters.initialTab as ViewMode);
     }
   }, [navigationParameters.initialTab, navigationParameters.ts]);
 
-
-  // Run a fade animation whenever the user switches between tabs
   useEffect(() => {
     fadeAnimationValue.setValue(0);
     Animated.timing(fadeAnimationValue, {
@@ -86,11 +89,9 @@ export default function TransactionsScreen() {
     }).start();
   }, [activeTabMode]);
 
-
-  // Listen to the transactions collection for changes involving the current user
   useEffect(() => {
     if (!currentUser) return;
-    
+
     const transactionsQuery = query(
       collection(db, 'transactions'),
       or(
@@ -104,7 +105,7 @@ export default function TransactionsScreen() {
         id: document.id,
         ...document.data(),
       })) as Transaction[];
-      
+
       setTransactions(transactionData);
       setIsLoading(false);
     });
@@ -112,15 +113,11 @@ export default function TransactionsScreen() {
     return stopDatabaseSubscription;
   }, [currentUser]);
 
-
-  // Turn off selection mode and clear the list of checked items
   const exitSelectionMode = () => {
     setIsSelectionModeActive(false);
     setSelectedTransactionIds([]);
   };
 
-
-  // Add or remove a transaction ID from the current selection list
   const toggleSelection = (transactionId: string) => {
     setSelectedTransactionIds((previousIds) =>
       previousIds.includes(transactionId)
@@ -129,13 +126,19 @@ export default function TransactionsScreen() {
     );
   };
 
+  const toggleExpandedDetails = (transactionId: string) => {
+    setExpandedTransactionIds((previousIds) =>
+      previousIds.includes(transactionId)
+        ? previousIds.filter((id) => id !== transactionId)
+        : [...previousIds, transactionId]
+    );
+  };
 
-  // Filter transactions based on whether the user is the owner or renter and the current tab
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
       const isOwner = transaction.ownerId === currentUser?.uid;
       const isVisible = isOwner ? transaction.showToOwner !== false : transaction.showToRenter !== false;
-      
+
       if (!isVisible) return false;
 
       const viewFilters: Record<ViewMode, boolean> = {
@@ -149,8 +152,6 @@ export default function TransactionsScreen() {
     });
   }, [transactions, activeTabMode, currentUser]);
 
-
-  // Handle hiding the record for owners or permanent deletion for renters
   const handleDataRemoval = async (transactionId: string) => {
     const transaction = transactions.find((t) => t.id === transactionId);
     if (!transaction || !currentUser) return;
@@ -168,11 +169,9 @@ export default function TransactionsScreen() {
     }
   };
 
-
-  // Show a confirmation popup before removing multiple selected items
   const confirmBulkDelete = () => {
     if (selectedTransactionIds.length === 0) return;
-    
+
     Alert.alert(
       'Remove Records',
       `This will remove ${selectedTransactionIds.length} record(s). Continue?`,
@@ -196,8 +195,6 @@ export default function TransactionsScreen() {
     );
   };
 
-
-  // Ask for confirmation before completing a transaction via item return
   const confirmReturnProcess = (transactionId: string, itemId: string) => {
     Alert.alert(
       'Confirm Return',
@@ -206,29 +203,25 @@ export default function TransactionsScreen() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Confirm',
-          onPress: () => updateTransactionStatus(transactionId, itemId, 'completed')
-        }
+          onPress: () => updateTransactionStatus(transactionId, itemId, 'completed'),
+        },
       ]
     );
   };
 
-
-  // Determine the background and text color for the status badge
   const getStatusBadgeTheme = (status: string, isDeleted: boolean) => {
-    if (isDeleted) return { background: '#F3F4F6', text: '#6B7280' };
-    
+    if (isDeleted) return { background: '#6B7280', text: '#fff' };
+
     const themeLookup: Record<string, { background: string; text: string }> = {
-      requested: { background: '#FFF3E0', text: '#E65100' },
-      rented: { background: '#E8F5E9', text: '#27AE60' },
-      completed: { background: '#E3F2FD', text: '#1976D2' },
-      cancelled: { background: '#FFEBEE', text: '#AF0B01' },
+      requested: { background: '#E65100', text: '#fff' },
+      rented: { background: '#27AE60', text: '#fff' },
+      completed: { background: '#1976D2', text: '#fff' },
+      cancelled: { background: '#AF0B01', text: '#fff' },
     };
 
-    return themeLookup[status] || { background: '#F3F4F6', text: '#000' };
+    return themeLookup[status] || { background: '#000', text: '#fff' };
   };
 
-
-  // Convert the Firebase timestamp into a readable date and time string
   const getFormattedTimestamp = (timestamp?: Timestamp) => {
     if (!timestamp) return 'Pending';
     const date = new Date(timestamp.seconds * 1000);
@@ -242,8 +235,56 @@ export default function TransactionsScreen() {
     });
   };
 
+  const getStatusDateLabel = (item: Transaction) => {
+    if (item.status === 'rented') return 'Approved on';
+    if (item.status === 'completed') return 'Completed on';
+    if (item.status === 'cancelled') return 'Cancelled on';
+    return 'Status update';
+  };
 
-  // Show action buttons like Approve, Decline, or Confirm Return
+  const getStatusDate = (item: Transaction) => {
+    if (item.status === 'rented') return item.approvedAt || item.statusChangedAt;
+    if (item.status === 'completed') return item.completedAt || item.statusChangedAt;
+    if (item.status === 'cancelled') return item.cancelledAt || item.statusChangedAt;
+    return item.statusChangedAt;
+  };
+
+  const getFormattedPrice = (price?: number | string) => {
+    if (price === undefined || price === null || price === '') return 'Not specified';
+
+    if (typeof price === 'number') {
+      return `₱${price.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      })}`;
+    }
+
+    return price;
+  };
+
+  const renderExpandedDetails = (item: Transaction) => {
+    const statusDate = getStatusDate(item);
+
+    return (
+      <View style={styles.detailsPanel}>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>{getStatusDateLabel(item)}</Text>
+          <Text style={styles.detailValue}>{getFormattedTimestamp(statusDate)}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Rent period</Text>
+          <Text style={styles.detailValue}>{item.rentPeriod || 'Not specified'}</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Price</Text>
+          <Text style={styles.detailValue}>{getFormattedPrice(item.rentPrice)}</Text>
+        </View>
+      </View>
+    );
+  };
+
   const renderItemActions = (item: Transaction, isOwner: boolean, isItemDeleted: boolean) => {
     if (isSelectionModeActive) return null;
 
@@ -259,50 +300,49 @@ export default function TransactionsScreen() {
     }
 
     return (
-      <View style={{ flexDirection: 'row', marginTop: scale(15), gap: scale(10) }}>
+      <View style={{ flexDirection: 'row', marginTop: scale(-2), gap: scale(10) }}>
         {isOwner && item.status === 'requested' && (
           <>
             <TouchableOpacity
-              style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40) }]}
+              style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40), marginTop: 12 }]}
               onPress={() => updateTransactionStatus(item.id, item.itemId, 'rented')}
             >
-              <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Approve</Text>
+              <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Approve</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40) }]}
+              style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40), marginTop: 12 }]}
               onPress={() => updateTransactionStatus(item.id, item.itemId, 'cancelled')}
             >
-              <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Decline</Text>
+              <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Decline</Text>
             </TouchableOpacity>
           </>
         )}
 
         {isOwner && item.status === 'rented' && (
           <TouchableOpacity
-            style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40) }]}
+            style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40), marginTop: 12 }]}
             onPress={() => confirmReturnProcess(item.id, item.itemId)}
           >
-            <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Confirm Return</Text>
+            <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Confirm Return</Text>
           </TouchableOpacity>
         )}
 
         {!isOwner && item.status === 'requested' && (
           <TouchableOpacity
-            style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40) }]}
+            style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40), marginTop: 12 }]}
             onPress={() => updateTransactionStatus(item.id, item.itemId, 'cancelled')}
           >
-            <Text style={[styles.messageBtnText, { fontWeight: 700 }]}>Cancel Request</Text>
+            <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Cancel Request</Text>
           </TouchableOpacity>
         )}
       </View>
     );
   };
 
-
-  // Define how each transaction card is displayed in the list
   const renderTransactionCard = ({ item }: { item: Transaction }) => {
     const isOwner = item.ownerId === currentUser?.uid;
     const isSelected = selectedTransactionIds.includes(item.id);
+    const isExpanded = expandedTransactionIds.includes(item.id);
     const isItemDeleted = item.itemDeleted === true || !item.itemName || item.itemName === 'Deleted Item';
     const badgeTheme = getStatusBadgeTheme(item.status, isItemDeleted);
 
@@ -335,24 +375,39 @@ export default function TransactionsScreen() {
           )}
         </View>
 
-        <Text style={[styles.cardTimestamp, { fontWeight: 700 }]}>
+        <Text style={[styles.cardTimestamp, { fontWeight: '700' }]}>
           {isOwner ? `Renter: ${item.renterEmail}` : `Owner: ${item.ownerEmail}`}
         </Text>
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Ionicons name="calendar-outline" size={14} color={COLOR_PRIMARY_RED} />
-          <Text style={[styles.cardTimestamp, { marginLeft: 5, marginBottom: 0, fontWeight: 600 }]}>
+          <Text style={[styles.cardTimestamp, { marginLeft: 5, marginBottom: 0, fontWeight: '600' }]}>
             {getFormattedTimestamp(item.createdAt)}
           </Text>
         </View>
+
+        {!isSelectionModeActive && (
+          <TouchableOpacity
+            activeOpacity={0.75}
+            onPress={() => toggleExpandedDetails(item.id)}
+            style={styles.detailsToggle}
+          >
+            <Text style={styles.detailsToggleText}>{isExpanded ? 'Hide details' : 'View details'}</Text>
+            <Ionicons
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              size={scale(18)}
+              color='#9CA3AF'
+            />
+          </TouchableOpacity>
+        )}
+
+        {isExpanded && !isSelectionModeActive && renderExpandedDetails(item)}
 
         {renderItemActions(item, isOwner, isItemDeleted)}
       </TouchableOpacity>
     );
   };
 
-
-  // Show the header title and the Select or Trash icons
   const renderScreenHeader = () => (
     <View style={[styles.topNav, { backgroundColor: COLOR_BACKGROUND_LIGHT }, isSelectionModeActive && { backgroundColor: COLOR_PRIMARY_RED }]}>
       {isSelectionModeActive && (
@@ -361,7 +416,7 @@ export default function TransactionsScreen() {
         </TouchableOpacity>
       )}
 
-      <Text style={[styles.logoMini, { flex: 1, fontWeight: 700 }, isSelectionModeActive && { color: '#FFF' }]}>
+      <Text style={[styles.logoMini, { flex: 1, fontWeight: '700' }, isSelectionModeActive && { color: '#FFF' }]}>
         {isSelectionModeActive ? `${selectedTransactionIds.length} Selected` : 'Transactions'}
       </Text>
 
@@ -377,8 +432,6 @@ export default function TransactionsScreen() {
     </View>
   );
 
-
-  // Show the tab bar used to switch between lending, borrowing, and completed
   const renderTabBar = () => {
     if (isSelectionModeActive) return null;
     const tabOptions: ViewMode[] = ['lending', 'borrowing', 'completed', 'returned'];
@@ -412,8 +465,6 @@ export default function TransactionsScreen() {
     );
   };
 
-
-  // Show a disclaimer box specifically when the user is on the Lending tab
   const renderLendingDisclaimer = () => {
     if (isSelectionModeActive || activeTabMode !== 'lending') return null;
 
@@ -425,7 +476,7 @@ export default function TransactionsScreen() {
         borderRadius: scale(12),
         backgroundColor: COLOR_INFO_LIGHT_BLUE,
         borderWidth: 1,
-        borderColor: COLOR_INFO_BLUE
+        borderColor: COLOR_INFO_BLUE,
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: scale(6) }}>
           <Ionicons name="information-circle-outline" size={scale(18)} color={COLOR_INFO_BLUE} />
@@ -433,19 +484,17 @@ export default function TransactionsScreen() {
             Disclaimer
           </Text>
         </View>
-        <Text style={{ fontSize: scale(13), lineHeight: scale(18), color: COLOR_INFO_BLUE, fontWeight: 500}}>
+        <Text style={{ fontSize: scale(13), lineHeight: scale(18), color: COLOR_INFO_BLUE, fontWeight: '500' }}>
           All transactions are made between users outside the app.
         </Text>
       </View>
     );
   };
 
-
-  // Display a placeholder message when there are no transactions to show
   const renderEmptyState = () => (
     <View style={{ alignItems: 'center', marginTop: scale(200) }}>
       <Ionicons name="receipt-outline" size={scale(60)} color="#cfd4da" />
-      <Text style={[styles.noResultsText, { marginTop: scale(10), fontWeight: 600 }]}>
+      <Text style={[styles.noResultsText, { marginTop: scale(10), fontWeight: '600' }]}>
         No records found in {activeTabMode}.
       </Text>
     </View>

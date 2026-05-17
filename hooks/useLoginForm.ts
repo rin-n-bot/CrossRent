@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { useAuth } from '../context/AuthContext';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -13,6 +14,7 @@ export const useLoginForm = () => {
   const [showPassword, setShowPassword]               = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const { refreshUser } = useAuth();
   const router = useRouter();
 
   const toggleMode                      = () => setIsLogin((p) => !p);
@@ -49,21 +51,31 @@ export const useLoginForm = () => {
   };
 
   const login = async () => {
-    const { user } = await signInWithEmailAndPassword(auth, email, password);
-    if (!user.emailVerified) {
-      Alert.alert('Verification Required', 'Please verify your HCDC email first!');
-      return;
-    }
-    await saveUser(user.uid, user.email, false);
-    router.replace('/(tabs)/home');
-  };
+  const { user } = await signInWithEmailAndPassword(auth, email, password);
+
+  await user.reload();
+  await user.getIdToken(true);
+
+  const freshUser = await refreshUser();
+
+  if (!freshUser?.emailVerified) {
+    await signOut(auth);
+    Alert.alert('Verification Required', 'Please verify your HCDC email first!');
+    return;
+  }
+
+  await saveUser(freshUser.uid, freshUser.email, false);
+  router.replace('/(tabs)/home');
+};
 
   const signup = async () => {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    await saveUser(user.uid, user.email, true);
-    await sendEmailVerification(user);
-    Alert.alert('Success', 'Verification email sent! Check your HCDC email.');
-  };
+  const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  await saveUser(user.uid, user.email, true);
+  await sendEmailVerification(user);
+  await signOut(auth);
+
+  Alert.alert('Success', 'Verification email sent! Check your HCDC email.');
+};
 
   const handleSubmit = async () => {
     if (!validate()) return;

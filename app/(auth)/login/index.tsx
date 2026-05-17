@@ -62,9 +62,7 @@ export default function LoginScreen() {
 
             <View style={styles.header}>
 
-              {/* Real logo — hidden under splash overlay during animation.
-                  Revealed naturally as contentOpacity fades in.
-                  Screen-absolute position measured and sent to splash as landing target. */}
+              {/* Real logo — hidden under splash overlay during animation */}
               <Text
                 ref={realLogoRef}
                 onLayout={onRealLogoLayout}

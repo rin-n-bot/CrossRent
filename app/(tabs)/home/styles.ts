@@ -303,13 +303,13 @@ export const styles = StyleSheet.create({
   },
 
   statusBadge: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 9,
     paddingVertical: 4,
     borderRadius: 5,
   },
 
   statusTextPlain: {
-    fontSize: scale(10),
+    fontSize: scale(9),
     fontWeight: '700',
     textTransform: 'uppercase',
   },

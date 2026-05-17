@@ -1,34 +1,26 @@
-import { StyleSheet, Dimensions, Platform, StatusBar } from 'react-native';
+// app/(tabs)/transactions/styles.ts
+
+import { StyleSheet, Dimensions } from 'react-native';
 
 const { width: WINDOW_WIDTH } = Dimensions.get('window');
 
-
-// Set a base width for scaling calculations (standard mobile width)
 const BASE_WIDTH = 375;
 
-
-// Create a scaling factor to keep the UI consistent across different screen sizes
 export const scale = (size: number) => (WINDOW_WIDTH / BASE_WIDTH) * size;
 
-
-// Standard spacing constants for a uniform layout
 const CONTENT_PADDING = scale(20);
 const CARD_RADIUS = scale(12);
 const TEXT_DARK = '#222D31';
 const TEXT_MUTED = '#9CA3AF';
 const BACKGROUND_LIGHT = '#F5F5F5';
+const COLOR_PRIMARY_RED = '#AF0B01';
 
 export const transStyles = StyleSheet.create({
-  
-
-  // Main background and top safe area handling
   container: {
     flex: 1,
     backgroundColor: BACKGROUND_LIGHT,
   },
 
-
-  // Header bar containing the title and action icons
   topNav: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -36,8 +28,6 @@ export const transStyles = StyleSheet.create({
     height: scale(60),
   },
 
-
-  // Small brand text or screen title in the header
   logoMini: {
     fontSize: scale(20),
     fontWeight: '800',
@@ -45,8 +35,6 @@ export const transStyles = StyleSheet.create({
     letterSpacing: -1,
   },
 
-
-  // Base container for each transaction item
   card: {
     width: '100%',
     marginBottom: scale(10),
@@ -56,8 +44,6 @@ export const transStyles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-
-  // Layout for the top section of a transaction card
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -65,16 +51,12 @@ export const transStyles = StyleSheet.create({
     marginBottom: scale(8),
   },
 
-
-  // Primary text for the item name within the card
   cardTitle: {
     fontSize: scale(16),
     fontWeight: '600',
     color: TEXT_DARK,
   },
 
-
-  // Secondary text for dates, times, or email identifiers
   cardTimestamp: {
     fontSize: scale(13),
     fontWeight: '700',
@@ -82,24 +64,65 @@ export const transStyles = StyleSheet.create({
     marginBottom: scale(4),
   },
 
-
-  // Small pill-shaped container for status tags
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 5,
   },
 
-
-  // Styling for the text inside the status pill
   statusTextPlain: {
     fontSize: scale(10),
     fontWeight: '700',
     textTransform: 'uppercase',
   },
 
+  detailsToggle: {
+    marginTop: scale(10),
+    paddingTop: scale(10),
+    borderTopWidth: 1,
+    borderTopColor: '#F1F1F1',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: scale(34),
+  },
 
-  // Base style for interactive action buttons (Approve, Decline, etc.)
+  detailsToggleText: {
+    fontSize: scale(13),
+    fontWeight: '600',
+    color: '#9CA3AF',
+    marginRight: scale(4),
+  },
+
+  detailsPanel: {
+    marginTop: scale(8),
+    padding: scale(12),
+    borderRadius: scale(10),
+  },
+
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingVertical: scale(5),
+    gap: scale(12),
+  },
+
+  detailLabel: {
+    flexShrink: 0,
+    fontSize: scale(12),
+    fontWeight: '600',
+    color: TEXT_MUTED,
+  },
+
+  detailValue: {
+    flex: 1,
+    fontSize: scale(14),
+    fontWeight: '600',
+    color: TEXT_DARK,
+    textAlign: 'right',
+  },
+
   messageBtn: {
     borderRadius: CARD_RADIUS,
     flexDirection: 'row',
@@ -107,20 +130,15 @@ export const transStyles = StyleSheet.create({
     alignItems: 'center',
   },
 
-
-  // Label styling for the text inside action buttons
   messageBtnText: {
     color: '#FFFFFF',
     fontSize: scale(14),
     fontWeight: '800',
   },
 
-  
-  // Text shown when the list has no items to display
   noResultsText: {
     fontSize: scale(14),
     color: '#cfd4da',
     fontWeight: '700',
   },
-
 });

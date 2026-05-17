@@ -251,13 +251,10 @@ export const ModalItemDetails = ({ selectedItem, setSelectedItem }: ModalItemDet
 
   // Badge color logic
   const badgeBackground =
-    displayStatus === 'Available' || displayStatus === 'Pending'
-      ? '#E8F5E9'
-      : '#FFEBEE';
-  const badgeTextColor =
-    displayStatus === 'Available' || displayStatus === 'Pending'
-      ? '#27AE60'
-      : '#AF0B01';
+  displayStatus === 'Available' || displayStatus === 'Pending'
+    ? '#27AE60'
+    : '#AF0B01';
+  const badgeTextColor = '#fff';
 
 
   return (

@@ -1,36 +1,71 @@
-import { addDoc, collection, doc, serverTimestamp, updateDoc, getDocs, query, where, writeBatch, deleteDoc } from 'firebase/firestore';
+// services/transactionService.ts
+
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+  writeBatch,
+} from 'firebase/firestore';
 import { db, auth } from '../firebase';
 
+const getRentPeriod = (item: any) => {
+  return (
+    item.rentPeriod ||
+    item.rentalPeriod ||
+    item.duration ||
+    item.borrowPeriod ||
+    'Not specified'
+  );
+};
+
+const getRentPrice = (item: any) => {
+  return (
+    item.rentPrice ??
+    item.price ??
+    item.rentalPrice ??
+    item.pricePerDay ??
+    item.rate ??
+    null
+  );
+};
+
 export const handleRentRequest = async (item: any, user: any) => {
-
-
-  // Create the Transaction
-  const transRef = await addDoc(collection(db, "transactions"), {
+  const transRef = await addDoc(collection(db, 'transactions'), {
     itemId: item.id,
     itemName: item.name || item.title,
     ownerId: item.ownerId,
     ownerEmail: item.ownerEmail,
     renterId: user.uid,
     renterEmail: user.email,
-    status: "requested",
+    status: 'requested',
     createdAt: serverTimestamp(),
+    statusChangedAt: null,
+    approvedAt: null,
+    completedAt: null,
+    cancelledAt: null,
+    rentPeriod: getRentPeriod(item),
+    rentPrice: getRentPrice(item),
     itemDeleted: false,
+    showToOwner: true,
+    showToRenter: true,
   });
 
-
-  // Update Item Status to Pending
-  const itemRef = doc(db, "items", item.id);
+  const itemRef = doc(db, 'items', item.id);
   await updateDoc(itemRef, {
-    status: "Pending",
-    currentTransactionId: transRef.id
+    status: 'Pending',
+    currentTransactionId: transRef.id,
   });
 
-
-  // Log
-  await addDoc(collection(db, "logs"), {
-    action: "requested",
+  await addDoc(collection(db, 'logs'), {
+    action: 'requested',
     by: user.uid,
-    role: "renter",
+    role: 'renter',
     transactionId: transRef.id,
     itemId: item.id,
     itemName: item.name || item.title,
@@ -48,22 +83,31 @@ export const updateTransactionStatus = async (
   const user = auth.currentUser;
   if (!user) return;
 
-  const transRef = doc(db, "transactions", transactionId);
+  const transRef = doc(db, 'transactions', transactionId);
 
+  const transactionUpdates: Record<string, any> = {
+    status: newStatus,
+    statusChangedAt: serverTimestamp(),
+  };
 
-  // Update transaction status
-  await updateDoc(transRef, { status: newStatus });
+  if (newStatus === 'rented') {
+    transactionUpdates.approvedAt = serverTimestamp();
+  } else if (newStatus === 'completed') {
+    transactionUpdates.completedAt = serverTimestamp();
+  } else if (newStatus === 'cancelled') {
+    transactionUpdates.cancelledAt = serverTimestamp();
+  }
 
+  await updateDoc(transRef, transactionUpdates);
 
-  // Update item ONLY if it still exists (guard against deleted items)
   try {
-    const itemRef = doc(db, "items", itemId);
-    if (newStatus === "rented") {
-      await updateDoc(itemRef, { status: "Rented" });
-    } else if (newStatus === "completed" || newStatus === "cancelled") {
+    const itemRef = doc(db, 'items', itemId);
+    if (newStatus === 'rented') {
+      await updateDoc(itemRef, { status: 'Rented' });
+    } else if (newStatus === 'completed' || newStatus === 'cancelled') {
       await updateDoc(itemRef, {
-        status: "Available",
-        currentTransactionId: null
+        status: 'Available',
+        currentTransactionId: null,
       });
     }
   } catch (err: any) {
@@ -72,18 +116,14 @@ export const updateTransactionStatus = async (
     }
   }
 
-
-  // Determine role accurately
   const role =
-    newStatus === "cancelled"
-      ? "renter"
-      : newStatus === "completed"
-      ? "owner"
-      : "owner";
+    newStatus === 'cancelled'
+      ? 'renter'
+      : newStatus === 'completed'
+      ? 'owner'
+      : 'owner';
 
-
-  // Log
-  await addDoc(collection(db, "logs"), {
+  await addDoc(collection(db, 'logs'), {
     action: newStatus,
     by: user.uid,
     role,
@@ -93,47 +133,35 @@ export const updateTransactionStatus = async (
   });
 };
 
-
-// Called when owner deletes an item
 export const handleItemDelete = async (itemId: string, itemName: string) => {
   const user = auth.currentUser;
   if (!user) return;
 
   const batch = writeBatch(db);
 
-
-  // Find all active transactions for this item
   const q = query(
-    collection(db, "transactions"),
-    where("itemId", "==", itemId),
-    where("status", "in", ["requested", "rented"])
+    collection(db, 'transactions'),
+    where('itemId', '==', itemId),
+    where('status', 'in', ['requested', 'rented'])
   );
   const snapshot = await getDocs(q);
 
-
-  // Mark each transaction as item deleted (do NOT change status so they stay in lending/borrowing tabs)
   snapshot.forEach((txDoc) => {
     batch.update(txDoc.ref, {
       itemDeleted: true,
-      itemName: "Deleted Item",
+      itemName: 'Deleted Item',
     });
   });
 
-
-  // Delete the item doc
-  const itemRef = doc(db, "items", itemId);
+  const itemRef = doc(db, 'items', itemId);
   batch.delete(itemRef);
 
-
-  // Commit atomically
   await batch.commit();
 
-
-  // Log
-  await addDoc(collection(db, "logs"), {
-    action: "item_deleted",
+  await addDoc(collection(db, 'logs'), {
+    action: 'item_deleted',
     by: user.uid,
-    role: "owner",
+    role: 'owner',
     itemId,
     itemName,
     affectedTransactions: snapshot.docs.map((d) => d.id),
@@ -141,16 +169,12 @@ export const handleItemDelete = async (itemId: string, itemName: string) => {
   });
 };
 
-
-// Called when a user dismisses/deletes a transaction card marked as itemDeleted
 export const deleteTransactionRecord = async (transactionId: string, itemId: string, itemName: string) => {
   const user = auth.currentUser;
   if (!user) return;
 
-
-  // Log BEFORE deleting so the record exists
-  await addDoc(collection(db, "logs"), {
-    action: "transaction_dismissed",
+  await addDoc(collection(db, 'logs'), {
+    action: 'transaction_dismissed',
     by: user.uid,
     transactionId,
     itemId,
@@ -158,7 +182,5 @@ export const deleteTransactionRecord = async (transactionId: string, itemId: str
     createdAt: serverTimestamp(),
   });
 
-  
-  // Delete the transaction document
-  await deleteDoc(doc(db, "transactions", transactionId));
+  await deleteDoc(doc(db, 'transactions', transactionId));
 };
