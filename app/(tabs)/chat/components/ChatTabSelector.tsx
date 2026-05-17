@@ -14,12 +14,12 @@ interface ChatTabSelectorProps {
 }
 
 
-// Main component for selecting between chat tabs
+// Main ChatTabSelector component
 const TABS: ChatTab[] = ['listing', 'renting'];
 export function ChatTabSelector({ activeTab, onSelectTab }: ChatTabSelectorProps) {
 
 
-  // Main render function for the tab selector
+  // Main ChatTabSelector renderer
   return (
     <View style={chatStyles.tabRow}>
       {TABS.map((tab) => {
@@ -49,6 +49,5 @@ export function ChatTabSelector({ activeTab, onSelectTab }: ChatTabSelectorProps
         );
       })}
     </View>
-  );
-  
+  ); 
 }

@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing } from 'react-native';
 
+
+// Types for layout measurements
 export interface Layout {
-  x: number;   // screen-absolute pageX
-  y: number;   // screen-absolute pageY
+  x: number;   
+  y: number;   
   w: number;
   h: number;
 }
 
 export type SplashPhase = 'splash' | 'spinning' | 'animating' | 'done';
 
+
+// Main hook to manage splash animation state and logic
 export const useSplashAnimation = () => {
   const [phase, setPhase]                       = useState<SplashPhase>('splash');
   const [splashLogoLayout, setSplashLogoLayout] = useState<Layout | null>(null);
@@ -25,14 +29,15 @@ export const useSplashAnimation = () => {
   const spinLoop        = useRef<Animated.CompositeAnimation | null>(null);
   const sequenceStarted = useRef(false);
 
+  // Sequence of animation
   useEffect(() => {
     if (!splashLogoLayout || !targetLayout || sequenceStarted.current) return;
     sequenceStarted.current = true;
 
-    // Both layouts are screen-absolute (via measure/pageX/pageY) — delta is always correct
     const dx = targetLayout.x - splashLogoLayout.x;
     const dy = targetLayout.y - splashLogoLayout.y;
 
+    // Show spinner after a delay, then fly logo to target, then reveal content
     const showSpinner = () => {
       setPhase('spinning');
       Animated.timing(spinnerOpacity.current, {
@@ -46,12 +51,14 @@ export const useSplashAnimation = () => {
       spinLoop.current.start();
     };
 
+    // Hide spinner and stop rotation
     const hideSpinner = () => {
       Animated.timing(spinnerOpacity.current, {
         toValue: 0, duration: 400, useNativeDriver: true,
       }).start(() => spinLoop.current?.stop());
     };
 
+    // Animate logo flying to target position
     const flyToTarget = () => {
       setPhase('animating');
       Animated.parallel([
@@ -64,6 +71,7 @@ export const useSplashAnimation = () => {
       ]).start();
     };
 
+    // Reveal the main content, fading in and fading out
     const revealContent = () => {
       Animated.parallel([
         Animated.timing(contentOpacity.current, {
@@ -75,6 +83,7 @@ export const useSplashAnimation = () => {
       ]).start(() => setPhase('done'));
     };
 
+    // Animation Timeout Delay
     const t1 = setTimeout(showSpinner,    800);
     const t2 = setTimeout(hideSpinner,   2200);
     const t3 = setTimeout(flyToTarget,   2800);
@@ -86,11 +95,13 @@ export const useSplashAnimation = () => {
     };
   }, [splashLogoLayout, targetLayout]);
 
+  // Interpolate spinner rotation from 0 to 360 degrees
   const spin = spinnerRot.current.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
 
+  // Return all relevant state and handlers for the splash animation
   return {
     phase,
     logoX: logoX.current,

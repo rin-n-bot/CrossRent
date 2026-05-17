@@ -137,9 +137,9 @@ export const profileStyles = StyleSheet.create({
 
 
   statusBadgeVerified: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingHorizontal: scale(8),
+    paddingVertical: scale(4),
+    borderRadius: scale(6),
     backgroundColor: '#27AE60',
     alignSelf: 'flex-start',
   },

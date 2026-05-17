@@ -65,9 +65,9 @@ export const transStyles = StyleSheet.create({
   },
 
   statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 5,
+    paddingHorizontal: scale(8),
+    paddingVertical: scale(4),
+    borderRadius: scale(5),
   },
 
   statusTextPlain: {

@@ -13,7 +13,7 @@ interface ChatSearchBarProps {
 }
 
 
-// Main search bar component
+// Main ChatSearchBar component
 export function ChatSearchBar({
   value,
   onChangeText,
@@ -22,7 +22,7 @@ export function ChatSearchBar({
 }: ChatSearchBarProps) {
 
 
-  // Main render function for the search bar
+  // Main ChatSearchBar renderer
   return (
     <View style={chatStyles.searchWrapper}>
       <View style={chatStyles.searchRow}>
@@ -53,6 +53,5 @@ export function ChatSearchBar({
 
       </View>
     </View>
-  );
-  
+  );  
 }

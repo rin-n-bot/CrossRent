@@ -32,7 +32,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-
   inner: {
     flex: 1,
     paddingHorizontal: scale(30),
@@ -46,7 +45,6 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: scaleH(10),
   },
-
   logo: {
     fontSize: scale(18),
     fontWeight: '700',
@@ -54,14 +52,12 @@ export const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginBottom: scaleH(8),
   },
-
   heroHeader: {
     fontSize: scale(35),
     fontWeight: '700',
     color: '#222D31',
     letterSpacing: -1.5,
   },
-
   quote: {
     fontSize: scale(13),
     textAlign: 'left',
@@ -76,12 +72,10 @@ export const styles = StyleSheet.create({
   form: {
     width: '100%',
   },
-
   inputBox: {
     marginBottom: scaleH(25),
     position: 'relative',
   },
-
   labelWrapper: {
     position: 'absolute',
     top: -10,
@@ -90,19 +84,16 @@ export const styles = StyleSheet.create({
     paddingHorizontal: scale(5),
     zIndex: 1,
   },
-
   inputLabel: {
     fontSize: scale(11),
     fontWeight: '700',
     color: '#222D31',
   },
-
   input: {
     ...SHARED_INPUT,
     fontSize: scale(16),
     color: '#1D3557',
   },
-
   passwordInputContainer: {
     ...SHARED_INPUT,
     flexDirection: 'row',
@@ -124,30 +115,25 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
   },
-
   mainActionText: {
     color: '#FFFFFF',
     fontSize: scale(16),
     fontWeight: '600',
     letterSpacing: 1,
   },
-
   forgotBtn: {
     marginTop: scaleH(20),
     alignItems: 'center',
   },
-
   forgotText: {
     color: '#1d3557',
     fontSize: scale(14),
     fontWeight: '600',
   },
-
   footerLogoContainer: {
     alignItems: 'center',
     marginTop: scaleH(30),
   },
-
   footerLogo: {
     width: scale(45),
     height: scale(45),

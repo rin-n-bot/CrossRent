@@ -181,10 +181,10 @@ export default function MyListingScreen() {
         <View style={{
     alignSelf: 'flex-start',
     backgroundColor,
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    marginTop: 6,
-    borderRadius: 5,
+    paddingHorizontal: scale(8),
+    paddingVertical: scale(4),
+    marginTop: scale(6),
+    borderRadius: scale(5),
 }}>
     <Text style={{
         fontSize: 10,

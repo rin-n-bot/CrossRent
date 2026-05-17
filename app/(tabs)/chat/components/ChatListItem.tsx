@@ -16,7 +16,7 @@ interface ChatListItemProps {
 }
 
 
-// Main component for rendering each chat item in the list
+// Main ChatListItem component
 export function ChatListItem({
   item,
   isSelected,
@@ -27,7 +27,7 @@ export function ChatListItem({
 }: ChatListItemProps) {
 
 
-  // Main render function for the chat list item
+  // Main ChatlistItem renderer
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -106,5 +106,4 @@ export function ChatListItem({
 
     </TouchableOpacity>
   );
-  
 }

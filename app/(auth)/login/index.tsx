@@ -19,16 +19,18 @@ import { InputField } from './components/InputField';
 import { SplashAnimation } from './components/SplashAnimation';
 import { styles } from './styles';
 
+
+// Utility to scale sizes based on screen height, using 844 as base height
 const { height } = Dimensions.get('window');
 const scaleH = (size: number) => (height / 844) * size;
 
+
+// LoginScreen component
 export default function LoginScreen() {
   const form   = useLoginForm();
   const splash = useSplashAnimation();
 
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-
-  // Ref to the real logo — measure() gives screen-absolute pageX/pageY
   const realLogoRef = useRef<Text>(null);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function LoginScreen() {
     return () => { show.remove(); hide.remove(); };
   }, []);
 
-  // Called once the real logo is laid out — passes screen-absolute coords as target
+  // Measure the real logo's position on screen after layout
   const onRealLogoLayout = () => {
     setTimeout(() => {
       realLogoRef.current?.measure((_x, _y, w, h, pageX, pageY) => {
@@ -50,6 +52,8 @@ export default function LoginScreen() {
     ? { paddingTop: scaleH(40) }
     : { paddingTop: scaleH(140) };
 
+
+  // Main LoginScreen renderer
   return (
     <SafeAreaView style={styles.container}>
 
@@ -57,9 +61,9 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
+
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <Animated.View style={[styles.inner, containerPadding, { opacity: splash.contentOpacity }]}>
-
             <View style={styles.header}>
 
               {/* Real logo — hidden under splash overlay during animation */}
@@ -74,11 +78,12 @@ export default function LoginScreen() {
               <Text style={styles.heroHeader}>
                 {form.isLogin ? 'Welcome Back' : 'Get Started'}
               </Text>
+
               <Text style={[styles.quote, { marginTop: 10 }]}>
                 Exclusive for Holy Cross of Davao College users.
               </Text>
+              
             </View>
-
             <View style={{ marginBottom: 70 }} />
 
             <View style={styles.form}>
@@ -88,6 +93,7 @@ export default function LoginScreen() {
                 value={form.email}
                 onChangeText={form.setEmail}
               />
+
               <InputField
                 label="PASSWORD"
                 placeholder="••••••••"
@@ -98,6 +104,7 @@ export default function LoginScreen() {
                 isPasswordVisible={form.showPassword}
                 onToggleVisibility={form.togglePasswordVisibility}
               />
+              
               {!form.isLogin && (
                 <InputField
                   label="CONFIRM PASSWORD"

@@ -14,7 +14,7 @@ interface ChatHeaderProps {
 }
 
 
-// Main header component
+// Main ChatHeader component
 export function ChatHeader({
   isSelectionMode,
   selectedCount,
@@ -57,5 +57,4 @@ export function ChatHeader({
 
     </View>
   );
-  
 }

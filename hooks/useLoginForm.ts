@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { auth, db } from '../firebase';
 
+
+// Custom hook to manage login/signup form state and logic
 export const useLoginForm = () => {
   const [isLogin, setIsLogin]                         = useState(true);
   const [email, setEmail]                             = useState('');
@@ -17,6 +19,7 @@ export const useLoginForm = () => {
   const { refreshUser } = useAuth();
   const router = useRouter();
 
+  // Toggle between login and signup modes
   const toggleMode                      = () => setIsLogin((p) => !p);
   const togglePasswordVisibility        = () => setShowPassword((p) => !p);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((p) => !p);
@@ -27,6 +30,7 @@ export const useLoginForm = () => {
     setConfirmPassword('');
   };
 
+  // Basic client-side validation before submitting
   const validate = (): boolean => {
     if (!email.endsWith('@hcdc.edu.ph')) {
       Alert.alert('Validation Error', 'Only HCDC email is allowed');
@@ -43,6 +47,7 @@ export const useLoginForm = () => {
     return true;
   };
 
+  // Save user data to Firestore on login/signup
   const saveUser = async (uid: string, userEmail: string | null, isNewUser: boolean) => {
     const data = isNewUser
       ? { uid, email: userEmail, createdAt: serverTimestamp() }
@@ -50,6 +55,7 @@ export const useLoginForm = () => {
     await setDoc(doc(db, 'users', uid), data, { merge: true });
   };
 
+  // Handle login logic
   const login = async () => {
   const { user } = await signInWithEmailAndPassword(auth, email, password);
 
@@ -68,6 +74,7 @@ export const useLoginForm = () => {
   router.replace('/(tabs)/home');
 };
 
+  // Handle signup logic
   const signup = async () => {
   const { user } = await createUserWithEmailAndPassword(auth, email, password);
   await saveUser(user.uid, user.email, true);
@@ -77,6 +84,7 @@ export const useLoginForm = () => {
   Alert.alert('Success', 'Verification email sent! Check your HCDC email.');
 };
 
+  // Handle form submission for both login and signup
   const handleSubmit = async () => {
     if (!validate()) return;
     try {
@@ -87,6 +95,7 @@ export const useLoginForm = () => {
     }
   };
 
+  // Return all state and handlers for use in the login/signup screen
   return {
     isLogin,
     email,

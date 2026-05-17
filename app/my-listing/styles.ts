@@ -62,7 +62,7 @@ export const listingStyles = StyleSheet.create({
   
   // BADGE AND STATUS INDICATORS
   statusBadge: {
-    paddingHorizontal: scale(8),
+    paddingHorizontal: scale(6),
     paddingVertical: scale(2),
     borderRadius: scale(4),
     alignSelf: 'flex-start', 

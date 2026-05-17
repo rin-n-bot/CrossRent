@@ -121,7 +121,7 @@ export const styles = StyleSheet.create({
   },
 
   logoMini: {
-    fontSize: scale(24),
+    fontSize: scale(20),
     fontWeight: '700',
     color: COLORS.dark,
     letterSpacing: -1,
@@ -303,7 +303,7 @@ export const styles = StyleSheet.create({
   },
 
   statusBadge: {
-    paddingHorizontal: 9,
+    paddingHorizontal: scale(8),
     paddingVertical: 4,
     borderRadius: 5,
   },

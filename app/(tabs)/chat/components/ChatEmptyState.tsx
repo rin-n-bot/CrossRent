@@ -14,7 +14,6 @@ interface ChatEmptyStateProps {
 export function ChatEmptyState({ searchQuery }: ChatEmptyStateProps) {
   const hasQuery = searchQuery.trim().length > 0;
 
-  
   // Render different icons and messages based on whether it's an empty inbox or no search results
   return (
     <View style={chatStyles.emptyStateWrapper}>
