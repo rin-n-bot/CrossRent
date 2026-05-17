@@ -136,6 +136,21 @@ export const profileStyles = StyleSheet.create({
   },
 
 
+  statusBadgeVerified: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: '#27AE60',
+    alignSelf: 'flex-start',
+  },
+  statusTextVerified: {
+    fontSize: scale(10),
+    fontWeight: '700',
+    color: '#fff',
+    textTransform: 'uppercase',
+  },
+
+
   // SECTION WRAPPER AND LABEL STYLES
   section: {
     paddingHorizontal: scale(20),

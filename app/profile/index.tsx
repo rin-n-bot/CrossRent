@@ -275,8 +275,8 @@ export default function ProfileScreen() {
                 <Text style={styles.infoRowLabel}>Account Status</Text>
                 <Text style={[styles.infoRowValue,{ fontWeight: '700' }]}></Text>
               </View>
-              <View style={{ backgroundColor: '#E8F5E9', paddingHorizontal: scale(8), paddingVertical: scale(3), borderRadius: scale(5) }}>
-                <Text style={{ fontSize: scale(10), fontWeight: '700', color: '#27AE60', textTransform: 'uppercase' }}>Verified</Text>
+              <View style={styles.statusBadgeVerified}>
+                <Text style={styles.statusTextVerified}>VERIFIED</Text>
               </View>
             </View>
           </View>

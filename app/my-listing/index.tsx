@@ -45,6 +45,11 @@ export default function MyListingScreen() {
    const [loading, setLoading] = useState(true);
 
 
+    const STATUS_AVAILABLE = 'Available';
+    const COLOR_SUCCESS_TEXT = '#27AE60';
+    const COLOR_ERROR_TEXT = '#AF0B01';
+
+
    // CATEGORY FILTERING AND ACCORDION UI
    const [categories, setCategories] = useState<{ id: string; displayName: string }[]>([]);
    const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -168,6 +173,31 @@ export default function MyListingScreen() {
    // INDIVIDUAL ITEM CARD RENDERER FOR FLATLIST
    const renderItem = ({ item }: { item: any }) => {
        const isRented = item.status?.toLowerCase() === 'rented';
+       const isAvailable = item.status === STATUS_AVAILABLE;
+    const backgroundColor = isAvailable ? COLOR_SUCCESS_TEXT : COLOR_ERROR_TEXT;
+
+    const renderStatusBadge = () => {
+    return (
+        <View style={{
+    alignSelf: 'flex-start',
+    backgroundColor,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    marginTop: 6,
+    borderRadius: 5,
+}}>
+    <Text style={{
+        fontSize: 10,
+        fontWeight: '700',
+        color: '#fff',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    }}>
+        {item.status}
+    </Text>
+</View>
+    );
+};
 
        return (
            <View style={styles.card}>
@@ -197,24 +227,8 @@ export default function MyListingScreen() {
                         {item.category || 'Uncategorized'}
                     </Text>
 
-                   {/* DYNAMIC STATUS BADGE */}
-                   <View style={{ flexDirection: 'row', marginTop: 6 }}>
-                       <View style={{
-                           backgroundColor: isRented ? '#FFF3E0' : '#E8F5E9',
-                           paddingHorizontal: 8,
-                           paddingVertical: 2,
-                           borderRadius: 4,
-                       }}>
-                           <Text style={{
-                               fontSize: 10,
-                               fontWeight: 'bold',
-                               color: isRented ? '#E65100' : '#27AE60',
-                               textTransform: 'uppercase'
-                           }}>
-                               {item.status || 'Active'}
-                           </Text>
-                       </View>
-                   </View>
+                   {renderStatusBadge()}
+
                </View>
 
                {/* ACTION BUTTONS SECTION (EDIT/DELETE) */}
