@@ -15,8 +15,8 @@ const SHARED_INPUT = {
   borderRadius: scale(15),
   height: scaleH(60),
   paddingHorizontal: scale(20),
-  borderWidth: 1.5,
-  borderColor: '#ffffff',
+  borderWidth: 1,
+  borderColor: '#cfd4da',
   shadowColor: '#000',
   shadowOffset: { width: 0, height: 1 },
   shadowOpacity: 0.08,
@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
   },
   inner: {
     flex: 1,
@@ -47,14 +47,14 @@ export const styles = StyleSheet.create({
   },
   logo: {
     fontSize: scale(18),
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#222D31',
     letterSpacing: -0.5,
     marginBottom: scaleH(8),
   },
   heroHeader: {
-    fontSize: scale(35),
-    fontWeight: '700',
+    fontSize: scale(28),
+    fontWeight: '600',
     color: '#222D31',
     letterSpacing: -1.5,
   },
@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     fontSize: scale(13),
     textAlign: 'left',
     color: '#999',
-    fontWeight: '600',
+    fontWeight: '500',
     fontStyle: 'italic',
     lineHeight: scale(18),
   },
@@ -80,13 +80,13 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     top: -10,
     left: scale(15),
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
     paddingHorizontal: scale(5),
     zIndex: 1,
   },
   inputLabel: {
     fontSize: scale(11),
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#222D31',
   },
   input: {
@@ -128,7 +128,7 @@ export const styles = StyleSheet.create({
   forgotText: {
     color: '#1d3557',
     fontSize: scale(14),
-    fontWeight: '600',
+    fontWeight: '500',
   },
   footerLogoContainer: {
     alignItems: 'center',

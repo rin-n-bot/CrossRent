@@ -34,6 +34,7 @@ export const chatStyles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     backgroundColor: COLORS.background,
+    marginBottom: 30,
   },
 
 
@@ -42,7 +43,7 @@ export const chatStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: scale(16),
+    paddingHorizontal: scale(20),
     height: scaleV(56),
     backgroundColor: COLORS.background,
   },
@@ -51,7 +52,7 @@ export const chatStyles = StyleSheet.create({
   // App logo text in nav
   navLogoText: {
     fontSize: scale(20),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     letterSpacing: -0.5,
     flex: 1,
@@ -93,7 +94,7 @@ export const chatStyles = StyleSheet.create({
   tabLabel: {
     textAlign: 'center',
     fontSize: scale(13),
-    fontWeight: '700',
+    fontWeight: '600',
   },
 
 
@@ -131,7 +132,7 @@ export const chatStyles = StyleSheet.create({
   },
   avatarFallbackText: {
     color: COLORS.surface,
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: scale(16),
   },
   unreadDot: {
@@ -159,14 +160,14 @@ export const chatStyles = StyleSheet.create({
   },
   senderName: {
     fontSize: scale(16),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.textMain,
     flex: 1,
     marginRight: scale(8),
   },
   timeLabel: {
     fontSize: scale(13),
-    fontWeight: '600',
+    fontWeight: '500',
     color: COLORS.textMuted,
   },
   lastMessagePreview: {
@@ -184,7 +185,7 @@ export const chatStyles = StyleSheet.create({
   emptyStateText: {
     fontSize: scale(14),
     color: COLORS.border,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: scaleV(10),
   },
   

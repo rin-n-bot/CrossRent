@@ -1,8 +1,8 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleProp, ViewStyle } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { styles, scale } from '../styles';
-
+import React from "react";
+import { StyleProp, Text, TouchableOpacity, ViewStyle } from "react-native";
+// Individual category card button
+import { Ionicons } from "@expo/vector-icons";
+import { scale, styles } from "../styles";
 
 // Type definitions for component props
 interface CategoryCardProps {
@@ -10,7 +10,6 @@ interface CategoryCardProps {
   isActive: boolean;
   onPress: () => void;
 }
-
 
 // Visual constants
 const ACTIVE_COLOR = "#FFFFFF";
@@ -20,30 +19,26 @@ const BORDER_RADIUS = 25;
 const TOUCH_OPACITY = 0.7;
 
 export const CategoryCard = ({ cat, isActive, onPress }: CategoryCardProps) => {
-  
-
   // Logic for dynamic container styling
   const getContainerStyle = (): StyleProp<ViewStyle> => [
     styles.categoryCard,
     isActive && styles.activeCategoryCard,
     {
-      flexDirection: 'row',
-      width: 'auto',
+      flexDirection: "row",
+      width: "auto",
       paddingHorizontal: scale(16),
       paddingVertical: scale(8),
       marginRight: scale(10),
       borderRadius: scale(BORDER_RADIUS),
       marginBottom: 0,
       height: scale(40),
-      alignItems: 'center',
+      alignItems: "center",
     },
   ];
-
 
   // Logic for dynamic content coloring
   const getContentColor = () => (isActive ? ACTIVE_COLOR : INACTIVE_COLOR);
 
-  
   // Main render
   return (
     <TouchableOpacity
@@ -51,26 +46,23 @@ export const CategoryCard = ({ cat, isActive, onPress }: CategoryCardProps) => {
       style={getContainerStyle()}
       activeOpacity={TOUCH_OPACITY}
     >
-      
       {/* Category Icon */}
-      <Ionicons 
-        name={cat.icon as any} 
-        size={scale(ICON_SIZE)} 
-        color={getContentColor()} 
+      <Ionicons
+        name={cat.icon as any}
+        size={scale(ICON_SIZE)}
+        color={getContentColor()}
       />
-      
+
       {/* Category Label */}
-      <Text 
+      <Text
         style={[
-          styles.categoryCardText, 
+          styles.categoryCardText,
           isActive && styles.activeCategoryCardText,
-          { marginTop: 0, marginLeft: scale(8) }
+          { marginTop: 0, marginLeft: scale(8) },
         ]}
       >
         {cat.name}
       </Text>
-
     </TouchableOpacity>
   );
-
 };

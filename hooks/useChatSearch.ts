@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { EnrichedChat } from './useChatList';
+// Hook for filtering chats by tab and search query
+import { useState } from "react";
+import { EnrichedChat } from "./useChatList";
 
-type ChatTab = 'listing' | 'renting';
+type ChatTab = "listing" | "renting";
 
 export const useChatSearch = (chats: EnrichedChat[], activeTab: ChatTab) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
+  // Filter chats by active tab and search query
   // Filter chats by active tab and search query
   const filteredChats = chats.filter((chat) => {
     if (chat.role !== activeTab) return false;

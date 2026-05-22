@@ -1,38 +1,42 @@
-import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+// Home screen showing rental listings with search and category filtering
 import {
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  Text,
-  View,
-  InteractionManager,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+    collection,
+    doc,
+    onSnapshot,
+    orderBy,
+    query,
+} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import {
+    InteractionManager,
+    RefreshControl,
+    ScrollView,
+    StatusBar,
+    Text,
+    View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useDrawer } from '../../../context/DrawerContext';
-import { auth, db } from '../../../firebase';
-import { ModalItemDetails } from '../../modal/index';
-import { styles } from './styles';
+import { useDrawer } from "../../../context/DrawerContext";
+import { auth, db } from "../../../firebase";
+import { ModalItemDetails } from "../../modal/index";
+import { styles } from "./styles";
 
-import { CategoryList } from './components/CategoryList';
-import { GreetingSection } from './components/GreetingSection';
-import { ListingsGrid } from './components/ListingsGrid';
-import { SearchBar } from './components/SearchBar';
-import { TopNav } from './components/TopNav';
-
+import { CategoryList } from "./components/CategoryList";
+import { GreetingSection } from "./components/GreetingSection";
+import { ListingsGrid } from "./components/ListingsGrid";
+import { SearchBar } from "./components/SearchBar";
+import { TopNav } from "./components/TopNav";
 
 // UI and logic constants
-const ALL_CATEGORY_ID = 'All';
+const ALL_CATEGORY_ID = "All";
 const REFRESH_DURATION = 1500;
 const LOAD_SIMULATION = 800;
-const ACCENT_RED = '#AF0B01';
-const LIGHT_GRAY = '#F5F5F5';
-
+const ACCENT_RED = "#AF0B01";
+const LIGHT_GRAY = "#F5F5F5";
 
 // Main Home Screen component
 export default function HomeScreen() {
-
   // Drawer state management and user authentication state
   const { toggleDrawer, isDrawerOpen } = useDrawer();
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
@@ -46,41 +50,41 @@ export default function HomeScreen() {
   // Local state for categories, listings, search query, loading states, and user profile info
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_ID);
   const [dbCategories, setDbCategories] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [listings, setListings] = useState<any[]>([]);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const [userEmail, setUserEmail] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
 
   // Utility function to format category IDs into user-friendly display names
   const formatCategoryName = (id: string) => {
     if (id === ALL_CATEGORY_ID) return ALL_CATEGORY_ID;
     return id
-      .split('-')
+      .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .join(" ");
   };
 
   // Filtering logic for listings based on active category and search query
   const getFilteredListings = () => {
     return listings.filter((item) => {
-      const itemCatId = (item.categoryId || '').toLowerCase().trim();
-      const itemCatLabel = (item.category || '').toLowerCase().trim();
+      const itemCatId = (item.categoryId || "").toLowerCase().trim();
+      const itemCatLabel = (item.category || "").toLowerCase().trim();
       const currentActive = activeCategory.toLowerCase().trim();
       const queryLower = searchQuery.toLowerCase().trim();
 
       const matchesCategory =
         activeCategory === ALL_CATEGORY_ID ||
         itemCatId === currentActive ||
-        itemCatId === currentActive + 's' ||
-        itemCatId + 's' === currentActive ||
+        itemCatId === currentActive + "s" ||
+        itemCatId + "s" === currentActive ||
         itemCatLabel === currentActive;
 
       const matchesSearch =
-        (item.name || '').toLowerCase().includes(queryLower) ||
-        (item.category || '').toLowerCase().includes(queryLower);
+        (item.name || "").toLowerCase().includes(queryLower) ||
+        (item.category || "").toLowerCase().includes(queryLower);
 
       return matchesCategory && matchesSearch;
     });
@@ -89,20 +93,23 @@ export default function HomeScreen() {
   // Sync user profile
   useEffect(() => {
     if (!currentUser) return;
-    setUserEmail(currentUser.email || '');
+    setUserEmail(currentUser.email || "");
     const unsubProfile = onSnapshot(
-      doc(db, 'profiles', currentUser.uid),
-      (snap) => { if (snap.exists()) setAvatarUrl(snap.data().profilePicUrl || ''); },
-      (error) => console.error('Profile snapshot error:', error)
+      doc(db, "profiles", currentUser.uid),
+      (snap) => {
+        if (snap.exists()) setAvatarUrl(snap.data().profilePicUrl || "");
+      },
+      (error) => console.error("Profile snapshot error:", error),
     );
     return unsubProfile;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.uid]);
 
   // Sync categories
   useEffect(() => {
     if (!currentUser) return;
     const unsubCats = onSnapshot(
-      collection(db, 'categories'),
+      collection(db, "categories"),
       (snapshot) => {
         const fetched = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -110,11 +117,15 @@ export default function HomeScreen() {
           displayName: formatCategoryName(doc.id),
         }));
         setDbCategories([
-          { id: ALL_CATEGORY_ID, displayName: ALL_CATEGORY_ID, icon: 'grid-outline' },
+          {
+            id: ALL_CATEGORY_ID,
+            displayName: ALL_CATEGORY_ID,
+            icon: "grid-outline",
+          },
           ...fetched,
         ]);
       },
-      (error) => console.error('Categories snapshot error:', error)
+      (error) => console.error("Categories snapshot error:", error),
     );
     return unsubCats;
   }, [currentUser]);
@@ -124,7 +135,7 @@ export default function HomeScreen() {
     if (!currentUser) return;
     let unsubItems: (() => void) | null = null;
     const task = InteractionManager.runAfterInteractions(() => {
-      const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
+      const q = query(collection(db, "items"), orderBy("createdAt", "desc"));
       unsubItems = onSnapshot(
         q,
         (snapshot) => {
@@ -133,21 +144,22 @@ export default function HomeScreen() {
             return {
               id: doc.id,
               ...data,
-              name: data.name || 'Untitled Item',
-              title: data.name || 'Untitled Item',
-              category: data.category || '',
-              categoryId: data.categoryId || '',
+              name: data.name || "Untitled Item",
+              title: data.name || "Untitled Item",
+              category: data.category || "",
+              categoryId: data.categoryId || "",
               image: data.imageUrl,
-              timestamp: data.createdAt?.toDate().toLocaleDateString() || 'Just now',
+              timestamp:
+                data.createdAt?.toDate().toLocaleDateString() || "Just now",
             };
           });
           setListings(items);
           setIsLoading(false);
         },
         (error) => {
-          console.error('Firestore Error:', error);
+          console.error("Firestore Error:", error);
           setIsLoading(false);
-        }
+        },
       );
     });
     return () => {
@@ -178,16 +190,25 @@ export default function HomeScreen() {
     searchQuery.length > 0
       ? `Results for "${searchQuery}"`
       : activeCategory === ALL_CATEGORY_ID
-      ? 'All Items'
-      : formatCategoryName(activeCategory);
+        ? "All Items"
+        : formatCategoryName(activeCategory);
 
   // Determine status bar style based on drawer and item selection state
   return (
     <View style={{ flex: 1, backgroundColor: LIGHT_GRAY }}>
-      <SafeAreaView style={[styles.container, { flex: 1, backgroundColor: LIGHT_GRAY }]}>
-        <StatusBar barStyle={isDrawerOpen || selectedItem ? 'light-content' : 'dark-content'} />
+      <SafeAreaView
+        style={[styles.container, { flex: 1, backgroundColor: LIGHT_GRAY }]}
+      >
+        <StatusBar
+          barStyle={
+            isDrawerOpen || selectedItem ? "light-content" : "dark-content"
+          }
+        />
 
-        <ModalItemDetails selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+        <ModalItemDetails
+          selectedItem={selectedItem}
+          setSelectedItem={setSelectedItem}
+        />
 
         <TopNav
           avatarUrl={avatarUrl}
@@ -207,7 +228,6 @@ export default function HomeScreen() {
             />
           }
         >
-
           <GreetingSection />
 
           <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
@@ -229,9 +249,7 @@ export default function HomeScreen() {
           {!isLoading && filteredListings.length > 0 && (
             <Text style={styles.endOfListText}>No more listings.</Text>
           )}
-
         </ScrollView>
-
       </SafeAreaView>
     </View>
   );

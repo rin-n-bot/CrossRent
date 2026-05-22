@@ -1,10 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { scale, styles } from '../styles';
-
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+// Home screen top navigation with greeting and profile button
+import { useRouter } from "expo-router";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { scale, styles } from "../styles";
 
 // Type definitions for component props
 interface TopNavProps {
@@ -13,12 +13,10 @@ interface TopNavProps {
   onMenuPress: () => void;
 }
 
-
 // Visual constants
-const ACCENT_RED = '#AF0B01';
-const CHARCOAL = '#222D31';
-const LIGHT_GRAY = '#F5F5F5';
-
+const ACCENT_RED = "#AF0B01";
+const CHARCOAL = "#222D31";
+const LIGHT_GRAY = "#F5F5F5";
 
 // Main component
 export function TopNav({ avatarUrl, userEmail, onMenuPress }: TopNavProps) {
@@ -27,7 +25,6 @@ export function TopNav({ avatarUrl, userEmail, onMenuPress }: TopNavProps) {
   // Logic for handling profile navigation
   return (
     <View style={[styles.topNav, { backgroundColor: LIGHT_GRAY }]}>
-
       <TouchableOpacity onPress={onMenuPress}>
         <Ionicons name="menu-outline" size={scale(28)} color={CHARCOAL} />
       </TouchableOpacity>
@@ -37,26 +34,23 @@ export function TopNav({ avatarUrl, userEmail, onMenuPress }: TopNavProps) {
       </Text>
 
       <TouchableOpacity
-        onPress={() => router.push('/profile' as any)}
-        style={[styles.profileCircle, { overflow: 'hidden' }]}
+        onPress={() => router.push("/profile" as any)}
+        style={[styles.profileCircle, { overflow: "hidden" }]}
         activeOpacity={0.8}
       >
-
         {avatarUrl ? (
           <Image
             source={{ uri: avatarUrl }}
-            style={{ width: '100%', height: '100%', borderRadius: scale(16) }}
+            style={{ width: "100%", height: "100%", borderRadius: scale(16) }}
           />
         ) : (
           <View style={styles.profileFallback}>
             <Text style={styles.profileFallbackText}>
-              {userEmail?.charAt(0).toUpperCase() || 'U'}
+              {userEmail?.charAt(0).toUpperCase() || "U"}
             </Text>
           </View>
         )}
-        
       </TouchableOpacity>
-
     </View>
   );
 }

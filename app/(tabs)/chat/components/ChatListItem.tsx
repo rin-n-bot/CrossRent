@@ -1,9 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { COLORS, chatStyles, scale } from '../styles';
-
+// Individual chat list item showing conversation preview and status
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { COLORS, chatStyles, scale } from "../styles";
 
 // Type definitions for ChatListItem component props
 interface ChatListItemProps {
@@ -15,7 +15,6 @@ interface ChatListItemProps {
   onLongPress: () => void;
 }
 
-
 // Main ChatListItem component
 export function ChatListItem({
   item,
@@ -25,8 +24,6 @@ export function ChatListItem({
   onPress,
   onLongPress,
 }: ChatListItemProps) {
-
-
   // Main ChatlistItem renderer
   return (
     <TouchableOpacity
@@ -35,10 +32,11 @@ export function ChatListItem({
       onPress={onPress}
       style={[
         chatStyles.chatRow,
-        { backgroundColor: isSelected ? COLORS.selectionBg : COLORS.background },
+        {
+          backgroundColor: isSelected ? COLORS.selectionBg : COLORS.background,
+        },
       ]}
     >
-
       {/* Avatar with unread indicator */}
       <View style={chatStyles.avatarWrapper}>
         {item.displayPhoto ? (
@@ -66,7 +64,7 @@ export function ChatListItem({
           <Text
             style={[
               chatStyles.senderName,
-              item.isUnread && { color: '#111', fontWeight: '800' },
+              item.isUnread && { color: "#111", fontWeight: "800" },
             ]}
             numberOfLines={1}
           >
@@ -86,7 +84,7 @@ export function ChatListItem({
         <Text
           style={[
             chatStyles.lastMessagePreview,
-            item.isUnread && { color: COLORS.dark, fontWeight: '600' },
+            item.isUnread && { color: COLORS.dark, fontWeight: "600" },
           ]}
           numberOfLines={1}
         >
@@ -97,13 +95,12 @@ export function ChatListItem({
       {/* Selection mode checkbox */}
       {isSelectionMode && (
         <Ionicons
-          name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
+          name={isSelected ? "checkmark-circle" : "ellipse-outline"}
           size={scale(24)}
           color={COLORS.primary}
           style={{ marginLeft: scale(8) }}
         />
       )}
-
     </TouchableOpacity>
   );
 }

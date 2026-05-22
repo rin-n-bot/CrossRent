@@ -1,24 +1,26 @@
-import { Redirect, Tabs, router } from 'expo-router';
-import { useAuth } from '../../context/AuthContext';
+// Tab navigator with animated capsule-style custom navigation bar
+import Ionicons from "@expo/vector-icons/Ionicons";
+import NetInfo from "@react-native-community/netinfo";
+import { Redirect, Tabs, router } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
   Animated,
   Dimensions,
-} from 'react-native';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import NetInfo from '@react-native-community/netinfo';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../../context/AuthContext";
 
-// Screen-relative scale 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+// Screen-relative scale
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const scale = (size: number) => (SCREEN_WIDTH / 390) * size;
 
-const NAV_HEIGHT = scale(62);
+// Navigation configuration
+const NAV_HEIGHT = scale(70);
 const ICON_SIZE = scale(24);
 const LABEL_SIZE = scale(11);
 const PILL_WIDTH = scale(56);
@@ -26,27 +28,25 @@ const PILL_HEIGHT = scale(30);
 const ADD_BTN_SIZE = scale(48);
 const BANNER_APPEAR_DELAY = 1500;
 const BANNER_ONLINE_DURATION = 3000;
-const TAB_ROUTE_NAMES = ['home/index', 'chat/index', 'transactions/index'];
+const TAB_ROUTE_NAMES = ["home/index", "chat/index", "transactions/index"];
 
 const COLORS = {
-  active: '#AF0B01',
-  activeLabel: '#AF0B01',
-  inactive: 'rgba(0,0,0,0.35)',
-  navBg: '#ffffff',
-  addBtn: '#AF0B01',
-  online: '#1D9E75',
-  white: '#fff',
-  bannerClose: 'rgba(255,255,255,0.2)',
+  active: "#AF0B01",
+  activeLabel: "#AF0B01",
+  inactive: "rgba(0,0,0,0.35)",
+  navBg: "#ffffff",
+  addBtn: "#AF0B01",
+  online: "#1D9E75",
+  white: "#fff",
+  bannerClose: "rgba(255,255,255,0.2)",
 };
-
 
 // Main layout component for the tab navigator, handling authentication and rendering the custom capsule navigation
 const ROUTES: Record<string, { icon: string; label: string }> = {
-  home: { icon: 'home', label: 'Home' },
-  chat: { icon: 'chatbubbles', label: 'Chats' },
-  transactions: { icon: 'swap-horizontal', label: 'Transact' },
+  home: { icon: "home", label: "Home" },
+  chat: { icon: "chatbubbles", label: "Chats" },
+  transactions: { icon: "swap-horizontal", label: "Transact" },
 };
-
 
 // Main Tabs layout component
 export default function TabsLayout() {
@@ -54,7 +54,7 @@ export default function TabsLayout() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#AF0B01" />
       </View>
     );
@@ -64,16 +64,18 @@ export default function TabsLayout() {
 
   return (
     <Tabs
-      screenOptions={{ headerShown: false, animation: 'fade' }}
+      screenOptions={{ headerShown: false, animation: "fade" }}
       tabBar={(props) => <CapsuleNav {...props} />}
     >
-      <Tabs.Screen name="home/index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="chat/index" options={{ title: 'Chats' }} />
-      <Tabs.Screen name="transactions/index" options={{ title: 'Transactions' }} />
+      <Tabs.Screen name="home/index" options={{ title: "Home" }} />
+      <Tabs.Screen name="chat/index" options={{ title: "Chats" }} />
+      <Tabs.Screen
+        name="transactions/index"
+        options={{ title: "Transactions" }}
+      />
     </Tabs>
   );
 }
-
 
 // Component for each individual tab item in the capsule navigation
 function TabItem({ route, isFocused, onPress }: any) {
@@ -98,14 +100,17 @@ function TabItem({ route, isFocused, onPress }: any) {
     ]).start();
   }, [isFocused, pillAnim, scaleAnim]);
 
-  const routeKey = route.name.split('/')[0];
-  const { icon, label } = ROUTES[routeKey] ?? { icon: 'help-outline', label: route.name };
+  const routeKey = route.name.split("/")[0];
+  const { icon, label } = ROUTES[routeKey] ?? {
+    icon: "help-outline",
+    label: route.name,
+  };
   const color = isFocused ? COLORS.active : COLORS.inactive;
   const labelColor = isFocused ? COLORS.activeLabel : COLORS.inactive;
 
   const pillBg = pillAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(175,11,1,0)', 'rgba(175,11,1,0.10)'],
+    outputRange: ["rgba(175,11,1,0)", "rgba(175,11,1,0.10)"],
   });
 
   // Main TabItem renderer
@@ -115,30 +120,32 @@ function TabItem({ route, isFocused, onPress }: any) {
       style={styles.navItem}
       activeOpacity={0.8}
     >
-
-      <Animated.View style={{ transform: [{ scale: scaleAnim }], alignItems: 'center' }}>
+      <Animated.View
+        style={{ transform: [{ scale: scaleAnim }], alignItems: "center" }}
+      >
         <Animated.View style={[styles.pill, { backgroundColor: pillBg }]}>
-
           <Ionicons
             name={(isFocused ? icon : `${icon}-outline`) as any}
             size={ICON_SIZE}
             color={color}
           />
-
         </Animated.View>
-        <Text numberOfLines={1} style={[styles.navLabel, { color: labelColor }]}>
+        <Text
+          numberOfLines={1}
+          style={[styles.navLabel, { color: labelColor }]}
+        >
           {label}
         </Text>
       </Animated.View>
-
     </TouchableOpacity>
   );
 }
 
-
 // Banner component to show network status changes
 function NetworkBanner({ navHeight }: { navHeight: number }) {
-  const [status, setStatus] = useState<'offline' | 'reconnecting' | 'online' | 'hidden'>('hidden');
+  const [status, setStatus] = useState<
+    "offline" | "reconnecting" | "online" | "hidden"
+  >("hidden");
   const translateY = useRef(new Animated.Value(scale(20))).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -159,25 +166,25 @@ function NetworkBanner({ navHeight }: { navHeight: number }) {
           useNativeDriver: true,
         }),
       ]),
-    [translateY, opacity]
+    [translateY, opacity],
   );
 
   // Hide banner
   const hideBanner = useCallback(() => {
-    animate(false).start(() => setStatus('hidden'));
+    animate(false).start(() => setStatus("hidden"));
   }, [animate]);
 
   // Show banner
   const showBanner = useCallback(
-    (newStatus: 'offline' | 'online') => {
+    (newStatus: "offline" | "online") => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
       setStatus(newStatus);
       animate(true).start();
-      if (newStatus === 'online') {
+      if (newStatus === "online") {
         hideTimer.current = setTimeout(hideBanner, BANNER_ONLINE_DURATION);
       }
     },
-    [animate, hideBanner]
+    [animate, hideBanner],
   );
 
   // Listen for network status changes and show/hide banner accordingly
@@ -187,14 +194,14 @@ function NetworkBanner({ navHeight }: { navHeight: number }) {
       if (isFirstMount.current) {
         if (state.isInternetReachable === null) return;
         isFirstMount.current = false;
-        if (!isConnected) showBanner('offline');
+        if (!isConnected) showBanner("offline");
         return;
       }
       if (!isConnected) {
-        showBanner('offline');
+        showBanner("offline");
       } else {
-        setStatus('reconnecting');
-        setTimeout(() => showBanner('online'), BANNER_APPEAR_DELAY);
+        setStatus("reconnecting");
+        setTimeout(() => showBanner("online"), BANNER_APPEAR_DELAY);
       }
     });
 
@@ -205,12 +212,12 @@ function NetworkBanner({ navHeight }: { navHeight: number }) {
   }, [showBanner]);
 
   // Avoid render the banner at all when it's hidden
-  if (status === 'hidden') return null;
+  if (status === "hidden") return null;
 
   // Status flags for rendering
-  const isOffline = status === 'offline';
-  const isOnline = status === 'online';
-  const isReconnecting = status === 'reconnecting';
+  const isOffline = status === "offline";
+  const isOnline = status === "online";
+  const isReconnecting = status === "reconnecting";
 
   // Main NetworkBanner renderer
   return (
@@ -220,23 +227,21 @@ function NetworkBanner({ navHeight }: { navHeight: number }) {
         { bottom: navHeight + scale(10), opacity, transform: [{ translateY }] },
       ]}
     >
-
       <View
         style={[
           styles.banner,
-          { backgroundColor: isOnline ? COLORS.online : 'rgba(24,30,33,0.97)' },
+          { backgroundColor: isOnline ? COLORS.online : "rgba(24,30,33,0.97)" },
         ]}
       >
-
         <Ionicons
-          name={isOffline ? 'cloud-offline-outline' : 'wifi-outline'}
+          name={isOffline ? "cloud-offline-outline" : "wifi-outline"}
           size={scale(15)}
           color={COLORS.white}
         />
 
         <Text style={styles.bannerText}>
           {isOffline && "You're offline"}
-          {isReconnecting && 'Reconnecting...'}
+          {isReconnecting && "Reconnecting..."}
           {isOnline && "You're now online"}
         </Text>
 
@@ -253,7 +258,6 @@ function NetworkBanner({ navHeight }: { navHeight: number }) {
             style={{ width: scale(18), height: scale(18) }}
           />
         )}
-
       </View>
     </Animated.View>
   );
@@ -266,7 +270,7 @@ function CapsuleNav({ state, navigation }: any) {
   const totalNavHeight = NAV_HEIGHT + safeBottom;
 
   const visibleRoutes = state.routes.filter((route: any) =>
-    TAB_ROUTE_NAMES.includes(route.name)
+    TAB_ROUTE_NAMES.includes(route.name),
   );
 
   // Animated values for the network banner
@@ -279,14 +283,14 @@ function CapsuleNav({ state, navigation }: any) {
           <View style={styles.capsule}>
             {visibleRoutes.map((route: any) => {
               const actualIndex = state.routes.findIndex(
-                (r: any) => r.key === route.key
+                (r: any) => r.key === route.key,
               );
 
               const isFocused = state.index === actualIndex;
 
               const onPress = () => {
                 const event = navigation.emit({
-                  type: 'tabPress',
+                  type: "tabPress",
                   target: route.key,
                   canPreventDefault: true,
                 });
@@ -306,7 +310,7 @@ function CapsuleNav({ state, navigation }: any) {
             })}
 
             <TouchableOpacity
-              onPress={() => router.push('/add-listing')}
+              onPress={() => router.push("/add-listing")}
               activeOpacity={0.75}
               style={styles.addBtnWrapper}
               hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
@@ -315,7 +319,6 @@ function CapsuleNav({ state, navigation }: any) {
                 <Ionicons name="add" size={ICON_SIZE} color={COLORS.white} />
               </View>
             </TouchableOpacity>
-
           </View>
         </View>
 
@@ -327,22 +330,19 @@ function CapsuleNav({ state, navigation }: any) {
   );
 }
 
-
 // Styles for the capsule navigation and network banner
 const styles = StyleSheet.create({
-
   shadowWrapper: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.07,
     shadowRadius: 12,
     elevation: 20,
   },
-
 
   // Navigation container
   navWrapper: {
@@ -350,46 +350,45 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.navBg,
     borderTopLeftRadius: scale(24),
     borderTopRightRadius: scale(24),
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   safeAreaFill: {
     backgroundColor: COLORS.navBg,
   },
   capsule: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: scale(20),
     height: NAV_HEIGHT,
   },
   navItem: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: NAV_HEIGHT,
   },
   pill: {
     width: PILL_WIDTH,
     height: PILL_HEIGHT,
     borderRadius: PILL_HEIGHT / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: scale(1),
   },
   navLabel: {
     fontSize: LABEL_SIZE,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
     letterSpacing: 0.2,
   },
-
 
   // Add button
   addBtnWrapper: {
     width: ADD_BTN_SIZE + scale(20),
     height: NAV_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingRight: scale(4),
   },
   addBtnInner: {
@@ -397,41 +396,40 @@ const styles = StyleSheet.create({
     height: ADD_BTN_SIZE,
     borderRadius: ADD_BTN_SIZE / 2,
     backgroundColor: COLORS.addBtn,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#AF0B01',
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#AF0B01",
     shadowOffset: { width: 0, height: scale(3) },
-    shadowOpacity: 0.40,
+    shadowOpacity: 0.4,
     shadowRadius: scale(8),
     elevation: 0,
   },
 
-
   // Network banner
   bannerWrapper: {
-    position: 'absolute',
-    alignSelf: 'center',
+    position: "absolute",
+    alignSelf: "center",
     zIndex: 999,
   },
   banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: scale(8),
     paddingHorizontal: scale(14),
     paddingVertical: scale(8),
     borderRadius: scale(20),
   },
   bannerText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: scale(13),
-    fontWeight: '600',
+    fontWeight: "500",
   },
   bannerClose: {
     width: scale(18),
     height: scale(18),
     borderRadius: scale(9),
     backgroundColor: COLORS.bannerClose,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

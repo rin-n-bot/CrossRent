@@ -1,10 +1,15 @@
-import React, { createContext, useContext, useRef, useState, ReactNode } from 'react';
-import { Animated } from 'react-native';
-
+// Navigation drawer context for slide-out menu state management
+import React, {
+    createContext,
+    ReactNode,
+    useContext,
+    useRef,
+    useState,
+} from "react";
+import { Animated } from "react-native";
 
 // DRAWER DIMENSIONS
 const DRAWER_WIDTH = 300;
-
 
 // DRAWER CONTEXT VALUE TYPES
 interface DrawerContextType {
@@ -13,16 +18,17 @@ interface DrawerContextType {
   toggleDrawer: (open: boolean) => void;
 }
 
-
 // CONTEXT INITIALIZATION
 const DrawerContext = createContext<DrawerContextType | undefined>(undefined);
 
-
 // NAVIGATION DRAWER PROVIDER
-export function DrawerProvider({ children }: { children: ReactNode }): React.ReactElement {
+export function DrawerProvider({
+  children,
+}: {
+  children: ReactNode;
+}): React.ReactElement {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
-
 
   // ANIMATE DRAWER TOGGLE STATE
   const toggleDrawer = (open: boolean): void => {
@@ -34,7 +40,6 @@ export function DrawerProvider({ children }: { children: ReactNode }): React.Rea
     }).start();
   };
 
-
   // CONTEXT PROVIDER WRAPPER
   return React.createElement(
     DrawerContext.Provider,
@@ -45,16 +50,15 @@ export function DrawerProvider({ children }: { children: ReactNode }): React.Rea
         toggleDrawer,
       },
     },
-    children
+    children,
   );
 }
-
 
 // CUSTOM DRAWER CONTEXT CONSUMER
 export function useDrawer(): DrawerContextType {
   const context = useContext(DrawerContext);
   if (!context) {
-    throw new Error('useDrawer must be used within DrawerProvider');
+    throw new Error("useDrawer must be used within DrawerProvider");
   }
   return context;
 }

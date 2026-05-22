@@ -1,4 +1,6 @@
-import React, { useRef, useState } from 'react';
+// Chat screen showing conversations for items being listed or rented
+import { useRouter } from "expo-router";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -6,29 +8,29 @@ import {
   StatusBar,
   TextInput,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { COLORS, chatStyles } from './styles';
-import { ChatHeader } from './components/ChatHeader';
-import { ChatSearchBar } from './components/ChatSearchBar';
-import { ChatTabSelector } from './components/ChatTabSelector';
-import { ChatListItem } from './components/ChatListItem';
-import { ChatEmptyState } from './components/ChatEmptyState';
-import { useChatList } from '../../../hooks/useChatList';
-import { useChatSelection } from '../../../hooks/useChatSelection';
-import { useChatSearch } from '../../../hooks/useChatSearch';
-import { useChatFadeAnimation } from '../../../hooks/useChatFadeAnimation';
-import { formatTimeLabel } from '../../../hooks/useChatTimeLabel';
+import { useChatFadeAnimation } from "../../../hooks/useChatFadeAnimation";
+import { useChatList } from "../../../hooks/useChatList";
+import { useChatSearch } from "../../../hooks/useChatSearch";
+import { useChatSelection } from "../../../hooks/useChatSelection";
+import { formatTimeLabel } from "../../../hooks/useChatTimeLabel";
+import { ChatEmptyState } from "./components/ChatEmptyState";
+import { ChatHeader } from "./components/ChatHeader";
+import { ChatListItem } from "./components/ChatListItem";
+import { ChatSearchBar } from "./components/ChatSearchBar";
+import { ChatTabSelector } from "./components/ChatTabSelector";
+import { COLORS, chatStyles } from "./styles";
 
-type ChatTab = 'listing' | 'renting';
+type ChatTab = "listing" | "renting";
 
 export default function ChatScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<ChatTab>('listing');
+  const [activeTab, setActiveTab] = useState<ChatTab>("listing");
   const searchInputRef = useRef<TextInput | null>(null);
 
+  // Fetch and filter chats with selection mode
   const { chats, isLoading, tick } = useChatList();
   const {
     isSelectionMode,
@@ -38,13 +40,16 @@ export default function ChatScreen() {
     cancelSelectionMode,
     deleteSelectedChats,
   } = useChatSelection();
-  const { searchQuery, setSearchQuery, filteredChats } = useChatSearch(chats, activeTab);
+  const { searchQuery, setSearchQuery, filteredChats } = useChatSearch(
+    chats,
+    activeTab,
+  );
   const { fadeAnim } = useChatFadeAnimation(activeTab);
 
   // Navigate to the conversation screen for a given chat
   const openChat = (chatId: string) => {
     router.push({
-      pathname: '../../message',
+      pathname: "../../message",
       params: { chatId },
     });
   };
@@ -57,7 +62,9 @@ export default function ChatScreen() {
         isSelectionMode && { backgroundColor: COLORS.primary },
       ]}
     >
-      <StatusBar barStyle={isSelectionMode ? 'light-content' : 'dark-content'} />
+      <StatusBar
+        barStyle={isSelectionMode ? "light-content" : "dark-content"}
+      />
 
       <ChatHeader
         isSelectionMode={isSelectionMode}
@@ -71,7 +78,7 @@ export default function ChatScreen() {
         <ChatSearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
-          onClear={() => setSearchQuery('')}
+          onClear={() => setSearchQuery("")}
           inputRef={searchInputRef}
         />
       )}
@@ -80,9 +87,11 @@ export default function ChatScreen() {
         <ChatTabSelector activeTab={activeTab} onSelectTab={setActiveTab} />
       )}
 
-      <Animated.View style={[chatStyles.listAnimatedWrapper, { opacity: fadeAnim }]}>
+      <Animated.View
+        style={[chatStyles.listAnimatedWrapper, { opacity: fadeAnim }]}
+      >
         {isLoading ? (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <ActivityIndicator size="large" color={COLORS.primary} />
           </View>
         ) : (
@@ -97,14 +106,18 @@ export default function ChatScreen() {
                 isSelected={selectedChatIds.includes(item.id)}
                 isSelectionMode={isSelectionMode}
                 timeLabel={
-                  item.updatedAtSeconds ? formatTimeLabel(item.updatedAtSeconds) : ''
+                  item.updatedAtSeconds
+                    ? formatTimeLabel(item.updatedAtSeconds)
+                    : ""
                 }
                 onLongPress={() => {
                   setIsSelectionMode(true);
                   toggleChatSelection(item.id);
                 }}
                 onPress={() =>
-                  isSelectionMode ? toggleChatSelection(item.id) : openChat(item.id)
+                  isSelectionMode
+                    ? toggleChatSelection(item.id)
+                    : openChat(item.id)
                 }
               />
             )}

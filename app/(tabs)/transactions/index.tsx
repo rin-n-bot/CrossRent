@@ -1,7 +1,7 @@
 // app/(tabs)/transactions/index.tsx
-
-import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+// Transactions screen showing lending, borrowing, completed and returned items
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
 import {
   collection,
   deleteDoc,
@@ -12,8 +12,8 @@ import {
   Timestamp,
   updateDoc,
   where,
-} from 'firebase/firestore';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+} from "firebase/firestore";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -23,12 +23,12 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { auth, db } from '../../../firebase';
-import { updateTransactionStatus } from '../../../services/transactionService';
-import { scale, transStyles as styles } from './styles';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { auth, db } from "../../../firebase";
+import { updateTransactionStatus } from "../../../services/transactionService";
+import { scale, transStyles as styles } from "./styles";
 
 interface Transaction {
   id: string;
@@ -38,7 +38,7 @@ interface Transaction {
   ownerEmail: string;
   renterId: string;
   renterEmail: string;
-  status: 'requested' | 'rented' | 'completed' | 'cancelled';
+  status: "requested" | "rented" | "completed" | "cancelled";
   itemDeleted?: boolean;
   createdAt?: Timestamp;
   statusChangedAt?: Timestamp;
@@ -51,26 +51,29 @@ interface Transaction {
   showToRenter?: boolean;
 }
 
-type ViewMode = 'lending' | 'borrowing' | 'completed' | 'returned';
+type ViewMode = "lending" | "borrowing" | "completed" | "returned";
 
-const COLOR_PRIMARY_RED = '#AF0B01';
-const COLOR_BACKGROUND_LIGHT = '#F5F5F5';
-const COLOR_DARK_MODE = '#222D31';
-const COLOR_INFO_BLUE = '#1976D2';
-const COLOR_INFO_LIGHT_BLUE = '#E3F2FD';
+const COLOR_PRIMARY_RED = "#AF0B01";
+const COLOR_BACKGROUND_LIGHT = "#F5F5F5";
+const COLOR_DARK_MODE = "#222D31";
+const COLOR_INFO_BLUE = "#1976D2";
+const COLOR_INFO_LIGHT_BLUE = "#E3F2FD";
 const ANIMATION_DURATION = 300;
 
 export default function TransactionsScreen() {
-  const router = useRouter();
   const navigationParameters = useLocalSearchParams();
   const currentUser = auth.currentUser;
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTabMode, setActiveTabMode] = useState<ViewMode>('lending');
+  const [activeTabMode, setActiveTabMode] = useState<ViewMode>("lending");
   const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
-  const [selectedTransactionIds, setSelectedTransactionIds] = useState<string[]>([]);
-  const [expandedTransactionIds, setExpandedTransactionIds] = useState<string[]>([]);
+  const [selectedTransactionIds, setSelectedTransactionIds] = useState<
+    string[]
+  >([]);
+  const [expandedTransactionIds, setExpandedTransactionIds] = useState<
+    string[]
+  >([]);
 
   const fadeAnimationValue = useRef(new Animated.Value(1)).current;
 
@@ -87,28 +90,32 @@ export default function TransactionsScreen() {
       duration: ANIMATION_DURATION,
       useNativeDriver: true,
     }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTabMode]);
 
   useEffect(() => {
     if (!currentUser) return;
 
     const transactionsQuery = query(
-      collection(db, 'transactions'),
+      collection(db, "transactions"),
       or(
-        where('ownerId', '==', currentUser.uid),
-        where('renterId', '==', currentUser.uid)
-      )
+        where("ownerId", "==", currentUser.uid),
+        where("renterId", "==", currentUser.uid),
+      ),
     );
 
-    const stopDatabaseSubscription = onSnapshot(transactionsQuery, (snapshot) => {
-      const transactionData = snapshot.docs.map((document) => ({
-        id: document.id,
-        ...document.data(),
-      })) as Transaction[];
+    const stopDatabaseSubscription = onSnapshot(
+      transactionsQuery,
+      (snapshot) => {
+        const transactionData = snapshot.docs.map((document) => ({
+          id: document.id,
+          ...document.data(),
+        })) as Transaction[];
 
-      setTransactions(transactionData);
-      setIsLoading(false);
-    });
+        setTransactions(transactionData);
+        setIsLoading(false);
+      },
+    );
 
     return stopDatabaseSubscription;
   }, [currentUser]);
@@ -122,7 +129,7 @@ export default function TransactionsScreen() {
     setSelectedTransactionIds((previousIds) =>
       previousIds.includes(transactionId)
         ? previousIds.filter((id) => id !== transactionId)
-        : [...previousIds, transactionId]
+        : [...previousIds, transactionId],
     );
   };
 
@@ -130,22 +137,30 @@ export default function TransactionsScreen() {
     setExpandedTransactionIds((previousIds) =>
       previousIds.includes(transactionId)
         ? previousIds.filter((id) => id !== transactionId)
-        : [...previousIds, transactionId]
+        : [...previousIds, transactionId],
     );
   };
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
       const isOwner = transaction.ownerId === currentUser?.uid;
-      const isVisible = isOwner ? transaction.showToOwner !== false : transaction.showToRenter !== false;
+      const isVisible = isOwner
+        ? transaction.showToOwner !== false
+        : transaction.showToRenter !== false;
 
       if (!isVisible) return false;
 
       const viewFilters: Record<ViewMode, boolean> = {
-        lending: isOwner && (transaction.status === 'requested' || transaction.status === 'rented'),
-        borrowing: !isOwner && (transaction.status === 'requested' || transaction.status === 'rented'),
-        completed: transaction.status === 'completed',
-        returned: transaction.status === 'cancelled',
+        lending:
+          isOwner &&
+          (transaction.status === "requested" ||
+            transaction.status === "rented"),
+        borrowing:
+          !isOwner &&
+          (transaction.status === "requested" ||
+            transaction.status === "rented"),
+        completed: transaction.status === "completed",
+        returned: transaction.status === "cancelled",
       };
 
       return viewFilters[activeTabMode];
@@ -160,12 +175,14 @@ export default function TransactionsScreen() {
 
     try {
       if (isRenter) {
-        await deleteDoc(doc(db, 'transactions', transactionId));
+        await deleteDoc(doc(db, "transactions", transactionId));
       } else {
-        await updateDoc(doc(db, 'transactions', transactionId), { showToOwner: false });
+        await updateDoc(doc(db, "transactions", transactionId), {
+          showToOwner: false,
+        });
       }
-    } catch (error) {
-      Alert.alert('Error', 'Action failed.');
+    } catch {
+      Alert.alert("Error", "Action failed.");
     }
   };
 
@@ -173,86 +190,95 @@ export default function TransactionsScreen() {
     if (selectedTransactionIds.length === 0) return;
 
     Alert.alert(
-      'Remove Records',
+      "Remove Records",
       `This will remove ${selectedTransactionIds.length} record(s). Continue?`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Confirm',
-          style: 'destructive',
+          text: "Confirm",
+          style: "destructive",
           onPress: async () => {
             try {
               for (const id of selectedTransactionIds) {
                 await handleDataRemoval(id);
               }
               exitSelectionMode();
-            } catch (e) {
-              Alert.alert('Error', 'Bulk action failed.');
+            } catch {
+              Alert.alert("Error", "Bulk action failed.");
             }
           },
         },
-      ]
+      ],
     );
   };
 
   const confirmReturnProcess = (transactionId: string, itemId: string) => {
     Alert.alert(
-      'Confirm Return',
-      'Are you sure the item has been returned safely? This will complete the transaction.',
+      "Confirm Return",
+      "Are you sure the item has been returned safely? This will complete the transaction.",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Confirm',
-          onPress: () => updateTransactionStatus(transactionId, itemId, 'completed'),
+          text: "Confirm",
+          onPress: () =>
+            updateTransactionStatus(transactionId, itemId, "completed"),
         },
-      ]
+      ],
     );
   };
 
   const getStatusBadgeTheme = (status: string, isDeleted: boolean) => {
-    if (isDeleted) return { background: '#6B7280', text: '#fff' };
+    if (isDeleted) return { background: "#6B7280", text: "#fff" };
 
     const themeLookup: Record<string, { background: string; text: string }> = {
-      requested: { background: '#E65100', text: '#fff' },
-      rented: { background: '#27AE60', text: '#fff' },
-      completed: { background: '#1976D2', text: '#fff' },
-      cancelled: { background: '#AF0B01', text: '#fff' },
+      requested: { background: "#E65100", text: "#fff" },
+      rented: { background: "#27AE60", text: "#fff" },
+      completed: { background: "#1976D2", text: "#fff" },
+      cancelled: { background: "#AF0B01", text: "#fff" },
     };
 
-    return themeLookup[status] || { background: '#000', text: '#fff' };
+    return themeLookup[status] || { background: "#000", text: "#fff" };
   };
 
   const getFormattedTimestamp = (timestamp?: Timestamp) => {
-    if (!timestamp) return 'Pending';
+    if (!timestamp) return "Pending";
     const date = new Date(timestamp.seconds * 1000);
-    return date.toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }) + ' · ' + date.toLocaleTimeString(undefined, {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return (
+      date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }) +
+      " · " +
+      date.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
   };
 
   const getStatusDateLabel = (item: Transaction) => {
-    if (item.status === 'rented') return 'Approved on';
-    if (item.status === 'completed') return 'Completed on';
-    if (item.status === 'cancelled') return 'Cancelled on';
-    return 'Status update';
+    if (item.status === "rented") return "Approved on";
+    if (item.status === "completed") return "Completed on";
+    if (item.status === "cancelled") return "Cancelled on";
+    return "Status update";
   };
 
   const getStatusDate = (item: Transaction) => {
-    if (item.status === 'rented') return item.approvedAt || item.statusChangedAt;
-    if (item.status === 'completed') return item.completedAt || item.statusChangedAt;
-    if (item.status === 'cancelled') return item.cancelledAt || item.statusChangedAt;
+    if (item.status === "rented")
+      return item.approvedAt || item.statusChangedAt;
+    if (item.status === "completed")
+      return item.completedAt || item.statusChangedAt;
+    if (item.status === "cancelled")
+      return item.cancelledAt || item.statusChangedAt;
     return item.statusChangedAt;
   };
 
   const getFormattedPrice = (price?: number | string) => {
-    if (price === undefined || price === null || price === '') return 'Not specified';
+    if (price === undefined || price === null || price === "")
+      return "Not specified";
 
-    if (typeof price === 'number') {
+    if (typeof price === "number") {
       return `₱${price.toLocaleString(undefined, {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
@@ -269,70 +295,133 @@ export default function TransactionsScreen() {
       <View style={styles.detailsPanel}>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>{getStatusDateLabel(item)}</Text>
-          <Text style={styles.detailValue}>{getFormattedTimestamp(statusDate)}</Text>
+          <Text style={styles.detailValue}>
+            {getFormattedTimestamp(statusDate)}
+          </Text>
         </View>
 
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Rent period</Text>
-          <Text style={styles.detailValue}>{item.rentPeriod || 'Not specified'}</Text>
+          <Text style={styles.detailValue}>
+            {item.rentPeriod || "Not specified"}
+          </Text>
         </View>
 
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Price</Text>
-          <Text style={styles.detailValue}>{getFormattedPrice(item.rentPrice)}</Text>
+          <Text style={styles.detailValue}>
+            {getFormattedPrice(item.rentPrice)}
+          </Text>
         </View>
       </View>
     );
   };
 
-  const renderItemActions = (item: Transaction, isOwner: boolean, isItemDeleted: boolean) => {
+  const renderItemActions = (
+    item: Transaction,
+    isOwner: boolean,
+    isItemDeleted: boolean,
+  ) => {
     if (isSelectionModeActive) return null;
 
     if (isItemDeleted) {
       return (
         <TouchableOpacity
-          style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40) }]}
+          style={[
+            styles.messageBtn,
+            { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40) },
+          ]}
           onPress={() => handleDataRemoval(item.id)}
         >
-          <Text style={styles.messageBtnText}>{isOwner ? 'Remove Record' : 'Delete Request'}</Text>
+          <Text style={styles.messageBtnText}>
+            {isOwner ? "Remove Record" : "Delete Request"}
+          </Text>
         </TouchableOpacity>
       );
     }
 
     return (
-      <View style={{ flexDirection: 'row', marginTop: scale(-2), gap: scale(10) }}>
-        {isOwner && item.status === 'requested' && (
+      <View
+        style={{ flexDirection: "row", marginTop: scale(-2), gap: scale(10) }}
+      >
+        {isOwner && item.status === "requested" && (
           <>
             <TouchableOpacity
-              style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40), marginTop: 12 }]}
-              onPress={() => updateTransactionStatus(item.id, item.itemId, 'rented')}
+              style={[
+                styles.messageBtn,
+                {
+                  backgroundColor: COLOR_DARK_MODE,
+                  flex: 1,
+                  height: scale(40),
+                  marginTop: 12,
+                },
+              ]}
+              onPress={() =>
+                updateTransactionStatus(item.id, item.itemId, "rented")
+              }
             >
-              <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Approve</Text>
+              <Text style={[styles.messageBtnText, { fontWeight: "600" }]}>
+                Approve
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40), marginTop: 12 }]}
-              onPress={() => updateTransactionStatus(item.id, item.itemId, 'cancelled')}
+              style={[
+                styles.messageBtn,
+                {
+                  backgroundColor: COLOR_PRIMARY_RED,
+                  flex: 1,
+                  height: scale(40),
+                  marginTop: 12,
+                },
+              ]}
+              onPress={() =>
+                updateTransactionStatus(item.id, item.itemId, "cancelled")
+              }
             >
-              <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Decline</Text>
+              <Text style={[styles.messageBtnText, { fontWeight: "600" }]}>
+                Decline
+              </Text>
             </TouchableOpacity>
           </>
         )}
 
-        {isOwner && item.status === 'rented' && (
+        {isOwner && item.status === "rented" && (
           <TouchableOpacity
-            style={[styles.messageBtn, { backgroundColor: COLOR_DARK_MODE, flex: 1, height: scale(40), marginTop: 12 }]}
+            style={[
+              styles.messageBtn,
+              {
+                backgroundColor: COLOR_DARK_MODE,
+                flex: 1,
+                height: scale(40),
+                marginTop: 12,
+              },
+            ]}
             onPress={() => confirmReturnProcess(item.id, item.itemId)}
           >
-            <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Confirm Return</Text>
+            <Text style={[styles.messageBtnText, { fontWeight: "600" }]}>
+              Confirm Return
+            </Text>
           </TouchableOpacity>
         )}
 
-        {!isOwner && item.status === 'requested' && (
+        {!isOwner && item.status === "requested" && (
           <TouchableOpacity
-            style={[styles.messageBtn, { backgroundColor: COLOR_PRIMARY_RED, flex: 1, height: scale(40), marginTop: 12 }]}
-            onPress={() => updateTransactionStatus(item.id, item.itemId, 'cancelled')}
+            style={[
+              styles.messageBtn,
+              {
+                backgroundColor: COLOR_PRIMARY_RED,
+                flex: 1,
+                height: scale(40),
+                marginTop: 12,
+              },
+            ]}
+            onPress={() =>
+              updateTransactionStatus(item.id, item.itemId, "cancelled")
+            }
           >
-            <Text style={[styles.messageBtnText, { fontWeight: '700' }]}>Cancel Request</Text>
+            <Text style={[styles.messageBtnText, { fontWeight: "600" }]}>
+              Cancel Request
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -343,7 +432,10 @@ export default function TransactionsScreen() {
     const isOwner = item.ownerId === currentUser?.uid;
     const isSelected = selectedTransactionIds.includes(item.id);
     const isExpanded = expandedTransactionIds.includes(item.id);
-    const isItemDeleted = item.itemDeleted === true || !item.itemName || item.itemName === 'Deleted Item';
+    const isItemDeleted =
+      item.itemDeleted === true ||
+      !item.itemName ||
+      item.itemName === "Deleted Item";
     const badgeTheme = getStatusBadgeTheme(item.status, isItemDeleted);
 
     return (
@@ -353,21 +445,28 @@ export default function TransactionsScreen() {
           setIsSelectionModeActive(true);
           toggleSelection(item.id);
         }}
-        onPress={() => (isSelectionModeActive ? toggleSelection(item.id) : null)}
-        style={[styles.card, isSelected && { backgroundColor: '#FFF9F9' }]}
+        onPress={() =>
+          isSelectionModeActive ? toggleSelection(item.id) : null
+        }
+        style={[styles.card, isSelected && { backgroundColor: "#FFF9F9" }]}
       >
         <View style={styles.cardHeader}>
           <Text style={[styles.cardTitle, { flex: 1 }]} numberOfLines={1}>
-            {isItemDeleted ? 'Item no longer available' : item.itemName}
+            {isItemDeleted ? "Item no longer available" : item.itemName}
           </Text>
-          <View style={[styles.statusBadge, { backgroundColor: badgeTheme.background }]}>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: badgeTheme.background },
+            ]}
+          >
             <Text style={[styles.statusTextPlain, { color: badgeTheme.text }]}>
-              {isItemDeleted ? 'Unavailable' : item.status}
+              {isItemDeleted ? "Unavailable" : item.status}
             </Text>
           </View>
           {isSelectionModeActive && (
             <Ionicons
-              name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
+              name={isSelected ? "checkmark-circle" : "ellipse-outline"}
               size={22}
               color={COLOR_PRIMARY_RED}
               style={{ marginLeft: scale(10) }}
@@ -375,13 +474,24 @@ export default function TransactionsScreen() {
           )}
         </View>
 
-        <Text style={[styles.cardTimestamp, { fontWeight: '700' }]}>
-          {isOwner ? `Renter: ${item.renterEmail}` : `Owner: ${item.ownerEmail}`}
+        <Text style={[styles.cardTimestamp, { fontWeight: "600" }]}>
+          {isOwner
+            ? `Renter: ${item.renterEmail}`
+            : `Owner: ${item.ownerEmail}`}
         </Text>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Ionicons name="calendar-outline" size={14} color={COLOR_PRIMARY_RED} />
-          <Text style={[styles.cardTimestamp, { marginLeft: 5, marginBottom: 0, fontWeight: '600' }]}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Ionicons
+            name="calendar-outline"
+            size={14}
+            color={COLOR_PRIMARY_RED}
+          />
+          <Text
+            style={[
+              styles.cardTimestamp,
+              { marginLeft: 5, marginBottom: 0, fontWeight: "600" },
+            ]}
+          >
             {getFormattedTimestamp(item.createdAt)}
           </Text>
         </View>
@@ -392,11 +502,13 @@ export default function TransactionsScreen() {
             onPress={() => toggleExpandedDetails(item.id)}
             style={styles.detailsToggle}
           >
-            <Text style={styles.detailsToggleText}>{isExpanded ? 'Hide details' : 'View details'}</Text>
+            <Text style={styles.detailsToggleText}>
+              {isExpanded ? "Hide details" : "View details"}
+            </Text>
             <Ionicons
-              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              name={isExpanded ? "chevron-up" : "chevron-down"}
               size={scale(18)}
-              color='#9CA3AF'
+              color="#9CA3AF"
             />
           </TouchableOpacity>
         )}
@@ -409,15 +521,32 @@ export default function TransactionsScreen() {
   };
 
   const renderScreenHeader = () => (
-    <View style={[styles.topNav, { backgroundColor: COLOR_BACKGROUND_LIGHT }, isSelectionModeActive && { backgroundColor: COLOR_PRIMARY_RED }]}>
+    <View
+      style={[
+        styles.topNav,
+        { backgroundColor: COLOR_BACKGROUND_LIGHT },
+        isSelectionModeActive && { backgroundColor: COLOR_PRIMARY_RED },
+      ]}
+    >
       {isSelectionModeActive && (
-        <TouchableOpacity onPress={exitSelectionMode} style={{ marginRight: scale(12) }}>
+        <TouchableOpacity
+          onPress={exitSelectionMode}
+          style={{ marginRight: scale(12) }}
+        >
           <Ionicons name="close-outline" size={scale(26)} color="#FFF" />
         </TouchableOpacity>
       )}
 
-      <Text style={[styles.logoMini, { flex: 1, fontWeight: '700' }, isSelectionModeActive && { color: '#FFF' }]}>
-        {isSelectionModeActive ? `${selectedTransactionIds.length} Selected` : 'Transactions'}
+      <Text
+        style={[
+          styles.logoMini,
+          { flex: 1, fontWeight: "600" },
+          isSelectionModeActive && { color: "#FFF" },
+        ]}
+      >
+        {isSelectionModeActive
+          ? `${selectedTransactionIds.length} Selected`
+          : "Transactions"}
       </Text>
 
       {isSelectionModeActive ? (
@@ -426,7 +555,9 @@ export default function TransactionsScreen() {
         </TouchableOpacity>
       ) : (
         <TouchableOpacity onPress={() => setIsSelectionModeActive(true)}>
-          <Text style={{ fontWeight: '700', color: COLOR_PRIMARY_RED }}>Select</Text>
+          <Text style={{ fontWeight: "600", color: COLOR_PRIMARY_RED }}>
+            Select
+          </Text>
         </TouchableOpacity>
       )}
     </View>
@@ -434,10 +565,21 @@ export default function TransactionsScreen() {
 
   const renderTabBar = () => {
     if (isSelectionModeActive) return null;
-    const tabOptions: ViewMode[] = ['lending', 'borrowing', 'completed', 'returned'];
+    const tabOptions: ViewMode[] = [
+      "lending",
+      "borrowing",
+      "completed",
+      "returned",
+    ];
 
     return (
-      <View style={{ flexDirection: 'row', paddingHorizontal: scale(10), backgroundColor: COLOR_BACKGROUND_LIGHT }}>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingHorizontal: scale(10),
+          backgroundColor: COLOR_BACKGROUND_LIGHT,
+        }}
+      >
         {tabOptions.map((mode) => (
           <TouchableOpacity
             key={mode}
@@ -446,15 +588,16 @@ export default function TransactionsScreen() {
               flex: 1,
               paddingVertical: scale(12),
               borderBottomWidth: 2,
-              borderBottomColor: activeTabMode === mode ? COLOR_PRIMARY_RED : 'transparent',
+              borderBottomColor:
+                activeTabMode === mode ? COLOR_PRIMARY_RED : "transparent",
             }}
           >
             <Text
               style={{
-                textAlign: 'center',
+                textAlign: "center",
                 fontSize: scale(13),
-                fontWeight: '700',
-                color: activeTabMode === mode ? COLOR_PRIMARY_RED : '#9CA3AF',
+                fontWeight: "600",
+                color: activeTabMode === mode ? COLOR_PRIMARY_RED : "#9CA3AF",
               }}
             >
               {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -466,25 +609,51 @@ export default function TransactionsScreen() {
   };
 
   const renderLendingDisclaimer = () => {
-    if (isSelectionModeActive || activeTabMode !== 'lending') return null;
+    if (isSelectionModeActive || activeTabMode !== "lending") return null;
 
     return (
-      <View style={{
-        marginTop: scale(15),
-        marginHorizontal: scale(20),
-        padding: scale(15),
-        borderRadius: scale(12),
-        backgroundColor: COLOR_INFO_LIGHT_BLUE,
-        borderWidth: 1,
-        borderColor: COLOR_INFO_BLUE,
-      }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: scale(6) }}>
-          <Ionicons name="information-circle-outline" size={scale(18)} color={COLOR_INFO_BLUE} />
-          <Text style={{ fontSize: scale(13), fontWeight: '700', color: COLOR_INFO_BLUE, marginLeft: scale(6) }}>
+      <View
+        style={{
+          marginTop: scale(15),
+          marginHorizontal: scale(20),
+          padding: scale(15),
+          borderRadius: scale(12),
+          backgroundColor: COLOR_INFO_LIGHT_BLUE,
+          borderWidth: 1,
+          borderColor: COLOR_INFO_BLUE,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: scale(6),
+          }}
+        >
+          <Ionicons
+            name="information-circle-outline"
+            size={scale(18)}
+            color={COLOR_INFO_BLUE}
+          />
+          <Text
+            style={{
+              fontSize: scale(13),
+              fontWeight: "600",
+              color: COLOR_INFO_BLUE,
+              marginLeft: scale(6),
+            }}
+          >
             Disclaimer
           </Text>
         </View>
-        <Text style={{ fontSize: scale(13), lineHeight: scale(18), color: COLOR_INFO_BLUE, fontWeight: '500' }}>
+        <Text
+          style={{
+            fontSize: scale(13),
+            lineHeight: scale(18),
+            color: COLOR_INFO_BLUE,
+            fontWeight: "500",
+          }}
+        >
           All transactions are made between users outside the app.
         </Text>
       </View>
@@ -492,26 +661,45 @@ export default function TransactionsScreen() {
   };
 
   const renderEmptyState = () => (
-    <View style={{ alignItems: 'center', marginTop: scale(200) }}>
+    <View style={{ alignItems: "center", marginTop: scale(200) }}>
       <Ionicons name="receipt-outline" size={scale(60)} color="#cfd4da" />
-      <Text style={[styles.noResultsText, { marginTop: scale(10), fontWeight: '600' }]}>
+      <Text
+        style={[
+          styles.noResultsText,
+          { marginTop: scale(10), fontWeight: "500" },
+        ]}
+      >
         No records found in {activeTabMode}.
       </Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: COLOR_BACKGROUND_LIGHT }, isSelectionModeActive && { backgroundColor: COLOR_PRIMARY_RED }]}>
-      <StatusBar barStyle={isSelectionModeActive ? 'light-content' : 'dark-content'} />
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: COLOR_BACKGROUND_LIGHT },
+        isSelectionModeActive && { backgroundColor: COLOR_PRIMARY_RED },
+      ]}
+    >
+      <StatusBar
+        barStyle={isSelectionModeActive ? "light-content" : "dark-content"}
+      />
 
       {renderScreenHeader()}
       {renderTabBar()}
 
-      <Animated.View style={{ flex: 1, backgroundColor: COLOR_BACKGROUND_LIGHT, opacity: fadeAnimationValue }}>
+      <Animated.View
+        style={{
+          flex: 1,
+          backgroundColor: COLOR_BACKGROUND_LIGHT,
+          opacity: fadeAnimationValue,
+        }}
+      >
         {renderLendingDisclaimer()}
 
         {isLoading ? (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <ActivityIndicator color={COLOR_PRIMARY_RED} size="large" />
           </View>
         ) : (
@@ -519,7 +707,10 @@ export default function TransactionsScreen() {
             data={filteredTransactions}
             renderItem={renderTransactionCard}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ padding: scale(20), paddingBottom: scale(100) }}
+            contentContainerStyle={{
+              padding: scale(20),
+              paddingBottom: scale(100),
+            }}
             ListEmptyComponent={renderEmptyState()}
           />
         )}

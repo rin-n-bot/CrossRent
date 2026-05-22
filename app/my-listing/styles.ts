@@ -34,7 +34,7 @@ export const listingStyles = StyleSheet.create({
     flex: 1,
     color: '#FFFFFF',
     fontSize: scale(18),
-    fontWeight: '700',
+    fontWeight: '600',
     textAlign: 'center',
     marginRight: scale(28), 
   },
@@ -71,7 +71,7 @@ export const listingStyles = StyleSheet.create({
 
   statusText: {
     fontSize: scale(10),
-    fontWeight: 'bold',
+    fontWeight: '500',
     textTransform: 'uppercase',
   },
 
@@ -92,13 +92,13 @@ export const listingStyles = StyleSheet.create({
 
   itemTitle: {
     fontSize: scale(15),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.textPrimary,
   },
 
   itemPrice: {
     fontSize: scale(14),
-    fontWeight: '600',
+    fontWeight: '500',
     color: COLORS.accent,
     marginTop: SPACING.xs,
   },

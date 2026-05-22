@@ -1,11 +1,11 @@
-import { Dimensions } from 'react-native';
+// Global design system tokens for spacing, colors, and typography
+import { Dimensions } from "react-native";
 
-const { width } = Dimensions.get('window');
-
+const { width } = Dimensions.get("window");
 
 // SCALE SYSTEM
+// Responsive scale function based on 375px screen width
 export const scale = (size: number) => (width / 375) * size;
-
 
 // SPACING
 export const SPACING = {
@@ -17,30 +17,28 @@ export const SPACING = {
   xxl: scale(30),
 };
 
-
 // COLORS
 export const COLORS = {
-  primary: '#222D31',
-  accent: '#AF0B01',
-  textPrimary: '#222D31',
-  textSecondary: '#6B7280',
-  textMuted: '#9CA3AF',
-  border: '#cfd4da',
-  background: '#f5f5f5',
-  lightBackground: '#F0F0F0',
+  primary: "#222D31",
+  accent: "#AF0B01",
+  textPrimary: "#222D31",
+  textSecondary: "#6B7280",
+  textMuted: "#9CA3AF",
+  border: "#cfd4da",
+  background: "#f5f5f5",
+  lightBackground: "#F0F0F0",
 };
-
 
 // TYPOGRAPHY
 export const TYPOGRAPHY = {
   title: {
     fontSize: scale(24),
-    fontWeight: '800' as const,
+    fontWeight: "600" as const,
     color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: scale(16),
-    fontWeight: '700' as const,
+    fontWeight: "500" as const,
     color: COLORS.textPrimary,
   },
   body: {
@@ -50,10 +48,9 @@ export const TYPOGRAPHY = {
   caption: {
     fontSize: scale(12),
     color: COLORS.textMuted,
-    fontWeight: '600' as const,
+    fontWeight: "500" as const,
   },
 };
-
 
 // LAYOUT TOKENS
 export const LAYOUT = {

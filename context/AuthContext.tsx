@@ -1,6 +1,14 @@
-import React, { createContext, useCallback, useContext, useEffect, ReactNode, useState } from 'react';
-import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth } from '../firebase';
+// Authentication context managing Firebase auth state and user sessions
+import { signOut as firebaseSignOut, onAuthStateChanged } from "firebase/auth";
+import React, {
+    createContext,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import { auth } from "../firebase";
 
 interface User {
   uid: string;
@@ -17,6 +25,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Convert Firebase user to app-level user if email verified
 const toAppUser = (firebaseUser: any): User | null => {
   if (!firebaseUser?.emailVerified) return null;
 
@@ -31,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Refresh current user auth token and verified state
   const refreshUser = useCallback(async () => {
     const firebaseUser = auth.currentUser;
 
@@ -48,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return refreshedUser;
   }, []);
 
+  // Listen for auth state changes and verify email on mount
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
@@ -83,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 }

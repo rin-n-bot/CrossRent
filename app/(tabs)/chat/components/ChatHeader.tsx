@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { COLORS, chatStyles, scale } from '../styles';
-
+// Chat screen header with selection mode controls
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { COLORS, chatStyles, scale } from "../styles";
 
 // Type definitions for ChatHeader component props
 interface ChatHeaderProps {
@@ -12,7 +12,6 @@ interface ChatHeaderProps {
   onDeleteSelected: () => void;
   onEnterSelection: () => void;
 }
-
 
 // Main ChatHeader component
 export function ChatHeader({
@@ -29,10 +28,16 @@ export function ChatHeader({
         isSelectionMode && { backgroundColor: COLORS.primary },
       ]}
     >
-        
       {isSelectionMode && (
-        <TouchableOpacity onPress={onCancelSelection} style={{ marginRight: scale(12) }}>
-          <Ionicons name="close-outline" size={scale(26)} color={COLORS.surface} />
+        <TouchableOpacity
+          onPress={onCancelSelection}
+          style={{ marginRight: scale(12) }}
+        >
+          <Ionicons
+            name="close-outline"
+            size={scale(26)}
+            color={COLORS.surface}
+          />
         </TouchableOpacity>
       )}
 
@@ -42,19 +47,24 @@ export function ChatHeader({
           isSelectionMode && { color: COLORS.surface },
         ]}
       >
-        {isSelectionMode ? `${selectedCount} Selected` : 'Messages'}
+        {isSelectionMode ? `${selectedCount} Selected` : "Messages"}
       </Text>
 
       {isSelectionMode ? (
         <TouchableOpacity onPress={onDeleteSelected}>
-          <Ionicons name="trash-outline" size={scale(24)} color={COLORS.surface} />
+          <Ionicons
+            name="trash-outline"
+            size={scale(24)}
+            color={COLORS.surface}
+          />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity onPress={onEnterSelection}>
-          <Text style={{ fontWeight: '700', color: COLORS.primary }}>Select</Text>
+          <Text style={{ fontWeight: "700", color: COLORS.primary }}>
+            Select
+          </Text>
         </TouchableOpacity>
       )}
-
     </View>
   );
 }

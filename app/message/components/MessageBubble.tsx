@@ -1,13 +1,14 @@
-import React from 'react';
-import { Platform, Text, View } from 'react-native';
+// Individual message bubble with timestamp and sender avatar
+import React from "react";
+import { Platform, Text, View } from "react-native";
 import {
-  BUBBLE_AVATAR_SIZE,
-  BUBBLE_MAX_WIDTH,
-  BUBBLE_MIN_WIDTH,
-  convoStyles,
-  scale,
-} from '../styles';
-import { AvatarCircle } from './AvatarCircle';
+    BUBBLE_AVATAR_SIZE,
+    BUBBLE_MAX_WIDTH,
+    BUBBLE_MIN_WIDTH,
+    convoStyles,
+    scale,
+} from "../styles";
+import { AvatarCircle } from "./AvatarCircle";
 
 interface MessageBubbleProps {
   messageData: any;
@@ -18,9 +19,9 @@ interface MessageBubbleProps {
 
 // Shadow applied only on iOS for received bubbles
 const iosBubbleShadow =
-  Platform.OS === 'ios'
+  Platform.OS === "ios"
     ? {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,
         shadowRadius: 4,
@@ -35,13 +36,13 @@ export function MessageBubble({
   recipientPhotoUrl,
 }: MessageBubbleProps) {
   const senderInitial =
-    (messageData.senderEmail as string)?.charAt(0).toUpperCase() ?? '?';
+    (messageData.senderEmail as string)?.charAt(0).toUpperCase() ?? "?";
 
   return (
     <View
       style={[
         convoStyles.messageRow,
-        { justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start' },
+        { justifyContent: isSentByCurrentUser ? "flex-end" : "flex-start" },
       ]}
     >
       {/* Avatar column — only for received messages, hidden mid-group for clean grouping */}
@@ -73,18 +74,18 @@ export function MessageBubble({
           borderRadius: scale(20),
           borderBottomRightRadius: isSentByCurrentUser ? scale(4) : scale(20),
           borderBottomLeftRadius: isSentByCurrentUser ? scale(20) : scale(4),
-          backgroundColor: isSentByCurrentUser ? '#222D31' : '#FFFFFF',
-          overflow: 'hidden',
+          backgroundColor: isSentByCurrentUser ? "#222D31" : "#FFFFFF",
+          overflow: "hidden",
           ...(isSentByCurrentUser ? {} : iosBubbleShadow),
         }}
       >
         <Text
           style={{
             fontSize: scale(15),
-            color: isSentByCurrentUser ? '#FFFFFF' : '#222D31',
+            color: isSentByCurrentUser ? "#FFFFFF" : "#222D31",
           }}
         >
-          {messageData.text + ' '}
+          {messageData.text + " "}
         </Text>
       </View>
     </View>

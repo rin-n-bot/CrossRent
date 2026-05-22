@@ -59,7 +59,7 @@ export const convoStyles = StyleSheet.create({
   // Recipient email label in header
   headerRecipientLabel: {
     fontSize: scale(16),
-    fontWeight: '700',
+    fontWeight: '600',
     color: CONVO_COLORS.surface,
     marginLeft: scale(10),
     textAlign: 'left',
@@ -80,7 +80,7 @@ export const convoStyles = StyleSheet.create({
   // Time divider pill label
   timeDividerLabel: {
     fontSize: scale(11),
-    fontWeight: '600',
+    fontWeight: '500',
     color: CONVO_COLORS.textMuted,
     backgroundColor: '#F3F4F6',
     paddingHorizontal: scale(10),

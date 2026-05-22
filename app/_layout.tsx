@@ -1,30 +1,38 @@
-import { Stack } from 'expo-router';
-import { collection, deleteDoc, getDocs, query, where } from 'firebase/firestore';
-import React, { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { DrawerMenu } from '../components/ui/DrawerMenu';
-import { AuthProvider, useAuth } from '../context/AuthContext';
-import { DrawerProvider } from '../context/DrawerContext';
-import { db } from '../firebase';
-import { StatusBar } from 'expo-status-bar';
-import { useFonts } from 'expo-font';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import * as SplashScreen from 'expo-splash-screen';
+// Root app layout with auth setup, drawer menu, and ghost chat cleanup
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import {
+  collection,
+  deleteDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import React, { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { DrawerMenu } from "../components/ui/DrawerMenu";
+import { AuthProvider, useAuth } from "../context/AuthContext";
+import { DrawerProvider } from "../context/DrawerContext";
+import { db } from "../firebase";
 
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutContent() {
   const { user, loading } = useAuth();
 
+  // Cleanup ghost/corrupted chat documents on startup
   useEffect(() => {
     if (!user) return;
 
     const cleanupGhostChats = async () => {
       try {
         const chatsQuery = query(
-          collection(db, 'chats'),
-          where('participants', 'array-contains', user.uid)
+          collection(db, "chats"),
+          where("participants", "array-contains", user.uid),
         );
         const chatsSnap = await getDocs(chatsQuery);
 
@@ -32,12 +40,15 @@ function RootLayoutContent() {
 
         for (const chatDoc of chatsSnap.docs) {
           const chatData = chatDoc.data();
-          const hasParticipants = chatData.participants && Array.isArray(chatData.participants);
+          const hasParticipants =
+            chatData.participants && Array.isArray(chatData.participants);
           const hasUpdatedAt = chatData.updatedAt;
           const hasLastMessage = chatData.lastMessage;
           const hasSenderEmail = chatData.lastSenderEmail;
 
-          const messagesSnap = await getDocs(collection(db, 'chats', chatDoc.id, 'messages'));
+          const messagesSnap = await getDocs(
+            collection(db, "chats", chatDoc.id, "messages"),
+          );
 
           const shouldDelete =
             !hasParticipants ||
@@ -56,7 +67,7 @@ function RootLayoutContent() {
           console.log(`Cleaned up ${deletedCount} ghost chat document(s)`);
         }
       } catch (error) {
-        console.error('Ghost chat cleanup error:', error);
+        console.error("Ghost chat cleanup error:", error);
       }
     };
 
@@ -65,7 +76,7 @@ function RootLayoutContent() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#AF0B01" />
       </View>
     );
@@ -75,10 +86,15 @@ function RootLayoutContent() {
     <DrawerProvider>
       <View style={{ flex: 1 }}>
         {user && <DrawerMenu />}
-        <Stack screenOptions={{ headerShown: false, contentStyle: { flex: 1 } }}>
+        <Stack
+          screenOptions={{ headerShown: false, contentStyle: { flex: 1 } }}
+        >
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(auth)" />
-          <Stack.Screen name="add-listing/index" options={{ presentation: 'modal' }} />
+          <Stack.Screen
+            name="add-listing/index"
+            options={{ presentation: "modal" }}
+          />
           <Stack.Screen name="profile/index" />
           <Stack.Screen name="my-listing/index" />
           <Stack.Screen name="message/index" />

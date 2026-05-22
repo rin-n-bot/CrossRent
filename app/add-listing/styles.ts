@@ -1,4 +1,4 @@
-import { StyleSheet, Platform, StatusBar } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 
 // Standardized constants for consistency
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   // Main title text inside the header
   headerTitle: { 
     fontSize: 18, 
-    fontWeight: '700', 
+    fontWeight: '600', 
     color: COLOR_PURE_WHITE 
   },
 
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   // Styling for the "Post" button text
   postBtnText: { 
     color: COLOR_PURE_WHITE, 
-    fontWeight: '800', 
+    fontWeight: '600', 
     fontSize: 15 
   },
 
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   // Labels used above input fields and chip groups
   label: { 
     fontSize: 14, 
-    fontWeight: '700', 
+    fontWeight: '600', 
     color: COLOR_DARK_CHARCOAL, 
     marginBottom: 10 
   },
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   // Default text color for chip labels
   chipText: { 
     color: '#666', 
-    fontWeight: '700', 
+    fontWeight: '600', 
     fontSize: 12 
   },
 
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   // Prompt text for the image selection area
   imageButtonText: {
     color: COLOR_PRIMARY_BRAND,
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: 14
   },
 

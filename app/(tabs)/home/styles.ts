@@ -108,7 +108,7 @@ export const styles = StyleSheet.create({
   drawerItemText: {
     marginLeft: 15,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
     color: COLORS.surface,
   },
 
@@ -122,7 +122,7 @@ export const styles = StyleSheet.create({
 
   logoMini: {
     fontSize: scale(20),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     letterSpacing: -1,
   },
@@ -149,7 +149,7 @@ export const styles = StyleSheet.create({
   // Initial letter shown when no profile photo
   profileFallbackText: {
     color: '#FFF',
-    fontWeight: 'bold',
+    fontWeight: '500',
     fontSize: scale(12),
   },
 
@@ -167,7 +167,7 @@ export const styles = StyleSheet.create({
 
   hcdcText: {
     fontSize: scale(14),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.secondary,
     marginRight: scale(4),
     letterSpacing: 0.5,
@@ -175,7 +175,7 @@ export const styles = StyleSheet.create({
 
   greetingText: {
     fontSize: scale(24),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     lineHeight: scale(24.5),
     letterSpacing: -0.5,
@@ -205,7 +205,7 @@ export const styles = StyleSheet.create({
   sectionLabel: {
     paddingHorizontal: HORIZONTAL_PADDING,
     fontSize: scale(15),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     marginTop: scale(5),
     marginBottom: scale(12),
@@ -285,7 +285,7 @@ export const styles = StyleSheet.create({
   cardCategory: {
     fontSize: scale(10),
     color: COLORS.primary,
-    fontWeight: '700',
+    fontWeight: '600',
     textTransform: 'uppercase',
   },
 
@@ -298,7 +298,7 @@ export const styles = StyleSheet.create({
 
   cardPricePlain: {
     fontSize: scale(16),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
   },
 
@@ -310,7 +310,7 @@ export const styles = StyleSheet.create({
 
   statusTextPlain: {
     fontSize: scale(9),
-    fontWeight: '700',
+    fontWeight: '600',
     textTransform: 'uppercase',
   },
 
@@ -329,14 +329,14 @@ export const styles = StyleSheet.create({
   noResultsText: {
     fontSize: scale(14),
     color: COLORS.borderMedium,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 
   endOfListText: {
     textAlign: 'center',
     color: COLORS.borderMedium,
     fontSize: scale(14),
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: scale(20),
     marginBottom: scale(10),
   },
@@ -355,7 +355,7 @@ export const styles = StyleSheet.create({
 
   modalHeaderTitle: {
     fontSize: scale(19),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     letterSpacing: -1,
   },
@@ -383,7 +383,7 @@ export const styles = StyleSheet.create({
 
   modalCategory: {
     fontSize: scale(12),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.primary,
     textTransform: 'uppercase',
   },
@@ -397,7 +397,7 @@ export const styles = StyleSheet.create({
 
   modalPrice: {
     fontSize: scale(20),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.dark,
     marginBottom: scale(20),
   },
@@ -423,7 +423,7 @@ export const styles = StyleSheet.create({
 
   detailValueContact: {
     fontSize: scale(15),
-    fontWeight: '700',
+    fontWeight: '500',
     color: COLORS.dark,
     marginLeft: 8,
   },
@@ -452,7 +452,7 @@ export const styles = StyleSheet.create({
   messageBtnText: {
     color: COLORS.surface,
     fontSize: scale(15),
-    fontWeight: '700',
+    fontWeight: '600',
   },
 
   infoCard: {
@@ -481,13 +481,13 @@ export const styles = StyleSheet.create({
 
   infoRowLabel: {
     fontSize: scale(13),
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.textMuted,
   },
 
   infoRowValue: {
     fontSize: scale(16),
-    fontWeight: '600',
+    fontWeight: '500',
     color: COLORS.dark,
     marginTop: scale(2),
   },

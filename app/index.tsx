@@ -1,24 +1,21 @@
-import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-
+// Entry point that redirects to login or home based on auth state
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Page() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
-
   useEffect(() => {
     if (!loading) {
       if (user) {
-        router.replace('/(tabs)/home');
+        router.replace("/(tabs)/home");
       } else {
-        router.replace('/(auth)/login');
+        router.replace("/(auth)/login");
       }
     }
   }, [user, loading, router]);
 
-  
   return null;
 }
-

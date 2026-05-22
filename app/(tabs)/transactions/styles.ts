@@ -13,7 +13,6 @@ const CARD_RADIUS = scale(12);
 const TEXT_DARK = '#222D31';
 const TEXT_MUTED = '#9CA3AF';
 const BACKGROUND_LIGHT = '#F5F5F5';
-const COLOR_PRIMARY_RED = '#AF0B01';
 
 export const transStyles = StyleSheet.create({
   container: {
@@ -30,7 +29,7 @@ export const transStyles = StyleSheet.create({
 
   logoMini: {
     fontSize: scale(20),
-    fontWeight: '800',
+    fontWeight: '600',
     color: TEXT_DARK,
     letterSpacing: -1,
   },
@@ -59,7 +58,7 @@ export const transStyles = StyleSheet.create({
 
   cardTimestamp: {
     fontSize: scale(13),
-    fontWeight: '700',
+    fontWeight: '500',
     color: TEXT_MUTED,
     marginBottom: scale(4),
   },
@@ -72,7 +71,7 @@ export const transStyles = StyleSheet.create({
 
   statusTextPlain: {
     fontSize: scale(10),
-    fontWeight: '700',
+    fontWeight: '600',
     textTransform: 'uppercase',
   },
 
@@ -89,7 +88,7 @@ export const transStyles = StyleSheet.create({
 
   detailsToggleText: {
     fontSize: scale(13),
-    fontWeight: '600',
+    fontWeight: '500',
     color: '#9CA3AF',
     marginRight: scale(4),
   },
@@ -111,14 +110,14 @@ export const transStyles = StyleSheet.create({
   detailLabel: {
     flexShrink: 0,
     fontSize: scale(12),
-    fontWeight: '600',
+    fontWeight: '500',
     color: TEXT_MUTED,
   },
 
   detailValue: {
     flex: 1,
     fontSize: scale(14),
-    fontWeight: '600',
+    fontWeight: '500',
     color: TEXT_DARK,
     textAlign: 'right',
   },
@@ -133,12 +132,12 @@ export const transStyles = StyleSheet.create({
   messageBtnText: {
     color: '#FFFFFF',
     fontSize: scale(14),
-    fontWeight: '800',
+    fontWeight: '600',
   },
 
   noResultsText: {
     fontSize: scale(14),
     color: '#cfd4da',
-    fontWeight: '700',
+    fontWeight: '500',
   },
 });

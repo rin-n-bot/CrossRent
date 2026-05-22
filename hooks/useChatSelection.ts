@@ -1,7 +1,8 @@
-import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
-import { useState } from 'react';
-import { Alert } from 'react-native';
-import { db } from '../firebase';
+// Hook for managing chat selection mode and bulk deletion
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { useState } from "react";
+import { Alert } from "react-native";
+import { db } from "../firebase";
 
 export const useChatSelection = () => {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -10,7 +11,7 @@ export const useChatSelection = () => {
   // Toggle a single chat in/out of the selection set
   const toggleChatSelection = (id: string) => {
     setSelectedChatIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
@@ -25,29 +26,31 @@ export const useChatSelection = () => {
     if (selectedChatIds.length === 0) return;
 
     Alert.alert(
-      'Delete Conversations',
+      "Delete Conversations",
       `This will permanently delete ${selectedChatIds.length} conversation(s).`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: async () => {
             try {
               for (const id of selectedChatIds) {
                 const messagesSnap = await getDocs(
-                  collection(db, 'chats', id, 'messages')
+                  collection(db, "chats", id, "messages"),
                 );
-                await Promise.all(messagesSnap.docs.map((m) => deleteDoc(m.ref)));
-                await deleteDoc(doc(db, 'chats', id));
+                await Promise.all(
+                  messagesSnap.docs.map((m) => deleteDoc(m.ref)),
+                );
+                await deleteDoc(doc(db, "chats", id));
               }
               cancelSelectionMode();
             } catch (error) {
-              console.error('Deletion error:', error);
+              console.error("Deletion error:", error);
             }
           },
         },
-      ]
+      ],
     );
   };
 

@@ -1,19 +1,17 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Text, TouchableOpacity, View } from 'react-native';
-import { GREETING_QUOTES } from '../../../../constants/quotes';
-import { scale, styles } from '../styles';
-
+// Greeting section with user avatar and welcome message
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { GREETING_QUOTES } from "../../../../constants/quotes";
+import { scale, styles } from "../styles";
 
 // Visual and logic constants for the greeting section
-const ACCENT_RED = '#AF0B01';
+const ACCENT_RED = "#AF0B01";
 const QUOTE_INTERVAL = 10000;
 const ANIMATION_SPEED = 500;
 
-
 // Main component
 export function GreetingSection() {
-
   // Local state for quote index and toggle state for full meaning display
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [showFullMeaning, setShowFullMeaning] = useState(false);
@@ -54,7 +52,7 @@ export function GreetingSection() {
   // Arrow rotation animation interpolation
   const arrowRotation = arrowRotate.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
+    outputRange: ["0deg", "180deg"],
   });
 
   // Main render
@@ -65,27 +63,26 @@ export function GreetingSection() {
         activeOpacity={0.7}
         style={styles.hcdcToggle}
       >
-
-        <Text style={[styles.hcdcText, showFullMeaning && { color: ACCENT_RED }]}>
-          {showFullMeaning ? 'Holy Cross of Davao College' : 'HCDC'}
+        <Text
+          style={[styles.hcdcText, showFullMeaning && { color: ACCENT_RED }]}
+        >
+          {showFullMeaning ? "Holy Cross of Davao College" : "HCDC"}
         </Text>
 
         <Animated.View style={{ transform: [{ rotate: arrowRotation }] }}>
           <Ionicons
             name="chevron-down"
             size={scale(16)}
-            color={showFullMeaning ? ACCENT_RED : '#0038A8'}
+            color={showFullMeaning ? ACCENT_RED : "#0038A8"}
           />
         </Animated.View>
-
       </TouchableOpacity>
-      
+
       <Animated.Text
         style={[styles.greetingText, { opacity: fadeAnim, letterSpacing: -1 }]}
       >
         {GREETING_QUOTES[quoteIndex]}
       </Animated.Text>
-
     </View>
   );
 }

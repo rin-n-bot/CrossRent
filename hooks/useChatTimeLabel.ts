@@ -1,4 +1,4 @@
-// Converts Firestore seconds into a readable relative time label
+// Format Firestore timestamp to relative time label (today, yesterday, etc)
 export const formatTimeLabel = (seconds: number): string => {
   const msgDate = new Date(seconds * 1000);
   const now = new Date();
@@ -10,18 +10,19 @@ export const formatTimeLabel = (seconds: number): string => {
 
   if (isToday) {
     return msgDate.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
+      hour: "numeric",
+      minute: "2-digit",
       hour12: true,
     });
   }
 
   const diffDays = Math.floor((now.getTime() - msgDate.getTime()) / 86400000);
-  if (diffDays < 7) return msgDate.toLocaleDateString(undefined, { weekday: 'short' });
+  if (diffDays < 7)
+    return msgDate.toLocaleDateString(undefined, { weekday: "short" });
 
   return msgDate.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    ...(msgDate.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}),
+    month: "short",
+    day: "numeric",
+    ...(msgDate.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}),
   });
 };

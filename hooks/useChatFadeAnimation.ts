@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { Animated } from 'react-native';
+// Hook for fade animation when switching chat tabs
+import { useEffect, useRef } from "react";
+import { Animated } from "react-native";
 
 export const useChatFadeAnimation = (activeTab: string) => {
   const fadeAnim = useRef(new Animated.Value(1)).current;

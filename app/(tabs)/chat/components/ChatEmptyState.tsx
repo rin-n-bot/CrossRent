@@ -1,14 +1,13 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Text, View } from 'react-native';
-import { chatStyles, scale, COLORS } from '../styles';
-
+// Empty state message when no chats exist for the selected tab
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Text, View } from "react-native";
+import { chatStyles, COLORS, scale } from "../styles";
 
 // Props definition for the empty state component
 interface ChatEmptyStateProps {
   searchQuery: string;
 }
-
 
 // Component to display when there are no messages or search results
 export function ChatEmptyState({ searchQuery }: ChatEmptyStateProps) {
@@ -18,12 +17,12 @@ export function ChatEmptyState({ searchQuery }: ChatEmptyStateProps) {
   return (
     <View style={chatStyles.emptyStateWrapper}>
       <Ionicons
-        name={hasQuery ? 'search-outline' : 'chatbubbles-outline'}
+        name={hasQuery ? "search-outline" : "chatbubbles-outline"}
         size={scale(70)}
         color={COLORS.iconInactive}
       />
       <Text style={chatStyles.emptyStateText}>
-        {hasQuery ? `No results for "${searchQuery}"` : 'No Messages Yet'}
+        {hasQuery ? `No results for "${searchQuery}"` : "No Messages Yet"}
       </Text>
     </View>
   );
